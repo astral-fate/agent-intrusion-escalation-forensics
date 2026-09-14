@@ -24,3 +24,7 @@ venv/
 
 # development notes kept locally, not part of the release
 docs/DEVNOTES-old-readme.md
+
+# Hand-saved copies of the report next to the build output: the released PDF is
+# docs/both-sides-detected-it-neither-escalated.pdf, which paper/build.sh keeps in sync.
+paper/Both Sides Detected It*.pdf
