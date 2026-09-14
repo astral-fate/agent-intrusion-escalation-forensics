@@ -140,3 +140,19 @@ def test_the_larger_less_true_number_is_present_but_not_the_headline(values):
     i_abstract_end = tex.find(r"\end{abstract}")
     # It must not appear in the abstract, where the headline lives.
     assert i_all > i_abstract_end
+
+
+def test_the_docs_copy_of_the_report_is_the_one_the_build_produced():
+    """docs/ serves the PDF to the Pages site; a stale copy there publishes old numbers.
+
+    paper/build.sh copies main.pdf into docs/ as its last step, so the two are equal by
+    construction. This pins that -- a hand-placed copy would pass review and then rot.
+    """
+    built = ROOT / "paper" / "main.pdf"
+    served = ROOT / "docs" / "both-sides-detected-it-neither-escalated.pdf"
+    if not built.exists():
+        pytest.skip("paper/main.pdf absent -- run paper/build.sh first")
+    assert served.exists(), "docs/ copy missing -- re-run paper/build.sh"
+    assert served.read_bytes() == built.read_bytes(), (
+        "docs/ copy differs from paper/main.pdf -- re-run paper/build.sh"
+    )

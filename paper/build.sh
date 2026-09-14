@@ -42,3 +42,10 @@ if [ "$undef" -gt 0 ]; then
     exit 1
 fi
 echo "all citations and references resolved"
+
+# The released report is also served from docs/ (the GitHub Pages site links it there). Copying
+# it as a build step rather than committing a second hand-made copy is what stops the published
+# PDF drifting from the one this build just produced; tests/test_verify.py pins them equal.
+mkdir -p ../docs
+cp main.pdf ../docs/both-sides-detected-it-neither-escalated.pdf
+echo "copied to docs/both-sides-detected-it-neither-escalated.pdf"
