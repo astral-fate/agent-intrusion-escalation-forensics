@@ -48,6 +48,7 @@ Incident Response Sprint](https://www.apartresearch.com/)**, Track 2 (Forensics 
 #### *Trouve Labs*
 
 [![Paper](https://img.shields.io/badge/Paper-PDF-b31b1b.svg)](docs/both-sides-detected-it-neither-escalated.pdf)
+[![Slides](https://img.shields.io/badge/Slides-PDF-8b5cf6)](docs/slides.pdf)
 [![Site](https://img.shields.io/badge/Site-GitHub%20Pages-2ea44f)](https://astral-fate.github.io/agent-intrusion-escalation-forensics/)
 [![Code](https://img.shields.io/badge/GitHub-Code-blue)](https://github.com/astral-fate/agent-intrusion-escalation-forensics)
 [![HuggingFace](https://img.shields.io/badge/HuggingFace-Dataset-F9D371)](https://huggingface.co/datasets/FatimahEmadEldin/agent-intrusion-escalation-forensics)
@@ -238,9 +239,10 @@ analysis/      concurrency.py (density, onsets, bound), escalation.py (intervals
 data/          16 derived datasets — the artifacts every claim is computed from
 results/       claims.json and the analysis outputs
 paper/         main.tex.tmpl (source), main.tex (generated), main.pdf, references.bib
-docs/          methodology.svg, and the built report PDF served by the Pages site
+docs/          methodology.svg, slides.html + slides.pdf (6-slide deck),
+               and the built report PDF served by the Pages site
 index.html     the project page at astral-fate.github.io/agent-intrusion-escalation-forensics
-tests/         74 offline tests, including regressions for both parser failure modes
+tests/         75 offline tests, including regressions for both parser failure modes
 verify.py      recomputes all 61 claims and renders the manuscript
 ```
 
@@ -254,7 +256,7 @@ python analysis/concurrency.py       # phase density, onsets, bound
 python analysis/escalation.py        # escalation intervals
 python verify.py                     # recompute 61 claims; render paper/main.tex
 cd paper && bash build.sh            # four LaTeX passes -> main.pdf
-python -m pytest tests -q            # 74 tests, offline
+python -m pytest tests -q            # 75 tests, offline
 ```
 
 Everything after ingestion runs offline. The pipeline is deterministic and seeds nothing.

@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Both Sides Detected It, Neither Escalated — July 2026 Agent Intrusion</title>
+<style>
+  :root {
+    --bg:#06070d; --bg-2:#0d1020; --fg:#e9ecf3; --muted:#8c93a8;
+    --accent:#22d3ee; --accent-2:#818cf8;
+    --good:#4ade80; --warn:#fbbf24; --bad:#f87171;
+    --line:rgba(255,255,255,0.10); --code-bg:#0a0d1c;
+    --grid:rgba(34,211,238,0.05);
+    --shadow:0 30px 80px -20px rgba(34,211,238,0.18);
+  }
+  * { box-sizing:border-box; }
+  html, body { margin:0; padding:0; background:var(--bg); color:var(--fg);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased; scroll-behavior:smooth; }
+  .slide { position:relative; width:100%; min-height:100vh; display:flex;
+    flex-direction:column; justify-content:center; padding:78px 92px 86px;
+    background:radial-gradient(ellipse at top,#0e1430 0%,var(--bg) 60%);
+    overflow:hidden; page-break-after:always; break-after:page;
+    border-bottom:1px solid rgba(255,255,255,0.06); }
+  .slide::before { content:""; position:absolute; inset:0; pointer-events:none; z-index:0;
+    background-image:linear-gradient(var(--grid) 1px,transparent 1px),
+                     linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:60px 60px;
+    mask-image:radial-gradient(ellipse at center,black 30%,transparent 80%); }
+  .slide > * { position:relative; z-index:1; }
+
+  .slide-brand { position:absolute; left:92px; top:28px; z-index:2;
+    font-size:11px; letter-spacing:.25em; text-transform:uppercase; color:var(--muted); }
+  .slide-brand b { color:var(--fg); font-weight:600; }
+  .slide-num { position:absolute; right:92px; top:28px; z-index:2;
+    font-family:ui-monospace,monospace; font-size:12px; color:var(--muted); }
+
+  .eyebrow { display:inline-block; align-self:flex-start;
+    font-size:11px; letter-spacing:.25em; text-transform:uppercase; color:var(--accent);
+    padding:5px 10px; border:1px solid rgba(34,211,238,0.3); border-radius:999px;
+    margin-bottom:20px; background:rgba(34,211,238,0.05); }
+
+  h1, h2, h3 { margin:0; font-weight:600; letter-spacing:-.01em; }
+  /* Solid rather than a background-clip:text gradient: Chrome's print path paints the
+     element box as well as the glyphs, which puts a visible rectangle around the title in
+     the exported PDF. */
+  h1 { font-size:clamp(38px,5.2vw,70px); line-height:1.05; color:#f4f6fb; }
+  h2 { font-size:clamp(26px,3.0vw,42px); line-height:1.15; margin-bottom:20px; }
+  h3 { font-size:clamp(15px,1.45vw,20px); color:var(--muted); font-weight:500; }
+  p { font-size:clamp(14px,1.2vw,18px); line-height:1.55; color:#cdd3e3; }
+  p.lede { font-size:clamp(17px,1.5vw,23px); color:#dde2f0; max-width:940px; }
+  .mt { margin-top:22px; } .mt-s { margin-top:14px; }
+
+  ul.bullets { list-style:none; padding:0; margin:20px 0 0; }
+  ul.bullets li { font-size:clamp(14px,1.2vw,18px); line-height:1.5; color:#cdd3e3;
+    padding:8px 0 8px 28px; position:relative; }
+  ul.bullets li::before { content:""; position:absolute; left:0; top:18px;
+    width:10px; height:10px; border:2px solid var(--accent); border-radius:50%;
+    box-shadow:0 0 12px rgba(34,211,238,0.35); }
+  ul.bullets li b { color:#ffffff; font-weight:600; }
+
+  .columns { display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:start; }
+  .columns.three { grid-template-columns:1fr 1fr 1fr; gap:34px; }
+  .columns.wide-left { grid-template-columns:1.25fr 1fr; gap:44px; }
+
+  .tile { border:1px solid var(--line); border-radius:14px; padding:20px 22px;
+          background:linear-gradient(160deg,rgba(255,255,255,0.02),rgba(255,255,255,0)); }
+  .tile h3 { color:var(--accent); font-size:13px; letter-spacing:.12em;
+             text-transform:uppercase; margin-bottom:10px; font-weight:600; }
+  .tile p { margin:0; }
+  .tile p + p { margin-top:10px; }
+  .tile.good { border-color:rgba(74,222,128,0.4); background:rgba(74,222,128,0.04); }
+  .tile.good h3 { color:var(--good); }
+  .tile.warn { border-color:rgba(251,191,36,0.4); background:rgba(251,191,36,0.04); }
+  .tile.warn h3 { color:var(--warn); }
+  .tile.bad  { border-color:rgba(248,113,113,0.4); background:rgba(248,113,113,0.04); }
+  .tile.bad h3 { color:var(--bad); }
+
+  .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:22px; margin-top:26px; }
+  .stats.three { grid-template-columns:repeat(3,1fr); }
+  .stat { padding:20px; border:1px solid var(--line); border-radius:14px;
+          background:linear-gradient(180deg,rgba(34,211,238,0.06),rgba(34,211,238,0)); }
+  .stat .v { font-size:clamp(30px,3.6vw,50px); font-weight:700; line-height:1; letter-spacing:-.02em;
+    color:var(--accent); }
+  .stat .l { color:var(--muted); font-size:12px; text-transform:uppercase;
+             letter-spacing:.12em; margin-top:9px; line-height:1.4; }
+
+  table.cmp { border-collapse:collapse; width:100%; margin-top:20px; font-size:14px; }
+  table.cmp th, table.cmp td { text-align:left; padding:9px 14px 9px 0; border-bottom:1px solid var(--line); }
+  table.cmp.dense-rows td, table.cmp.dense-rows th { padding:6px 12px 6px 0; font-size:13.5px; }
+  table.cmp th { color:var(--muted); font-weight:500; font-size:11px; letter-spacing:.14em; text-transform:uppercase; }
+  table.cmp td { color:#cdd3e3; line-height:1.45; vertical-align:top; }
+  table.cmp td b { color:#ffffff; font-weight:600; }
+  table.cmp td.k { color:#ffffff; font-weight:600; width:44%; }
+  table.cmp td.n { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  table.cmp tr.dense td { color:#ffffff; font-weight:600; }
+  table.cmp tr:last-child td { border-bottom:0; }
+  .val { color:var(--accent); font-weight:700; font-variant-numeric:tabular-nums; }
+
+  .quote { border-left:3px solid var(--accent); padding:4px 0 4px 20px;
+           font-size:clamp(16px,1.45vw,21px); line-height:1.45; color:#e9ecf3; font-style:italic; }
+  .quote cite { display:block; margin-top:10px; font-size:12px; font-style:normal;
+                color:var(--muted); letter-spacing:.1em; text-transform:uppercase; }
+
+  .figbox { border:1px solid var(--line); border-radius:16px;
+            background:rgba(255,255,255,0.015); padding:16px;
+            display:flex; align-items:center; justify-content:center; }
+  .figbox svg { width:100%; height:auto; }
+
+  .center { text-align:center; align-items:center; justify-content:center; }
+  .center > * { align-self:center; }
+  .signature { display:flex; gap:20px; align-items:center; margin-top:30px;
+               color:var(--muted); flex-wrap:wrap; font-size:15px; }
+  .signature .dot { width:8px; height:8px; background:var(--accent); border-radius:50%;
+                    box-shadow:0 0 16px var(--accent); }
+
+  .kicker { font-size:clamp(17px,1.5vw,23px); color:var(--accent); font-weight:600; margin-top:24px; }
+  .foot-note { font-size:12.5px; color:var(--muted); line-height:1.5; margin-top:20px; }
+
+  svg .lbl { font-family:ui-monospace,monospace; font-size:11px; fill:#8c93a8; }
+  svg .ttl { font-family:ui-sans-serif,system-ui; font-size:13px; fill:#e9ecf3; font-weight:600; }
+  svg .box { fill:rgba(255,255,255,0.02); stroke:rgba(255,255,255,0.10); stroke-width:1.2; rx:8; }
+  svg .box.accent { stroke:#22d3ee; fill:rgba(34,211,238,0.06); }
+  svg .box.good { stroke:#4ade80; fill:rgba(74,222,128,0.06); }
+  svg .box.warn { stroke:#fbbf24; fill:rgba(251,191,36,0.05); }
+  svg .arrow { stroke:#22d3ee; stroke-width:1.6; fill:none; }
+  svg .gate { font-family:ui-monospace,monospace; font-size:10.5px; fill:#fbbf24; }
+
+  /* Scoped to `screen`: Chrome lays print out in a viewport narrower than the A4-landscape
+     page box, so an unscoped max-width query fires during print-to-PDF and collapses every
+     multi-column slide to a single column in the exported deck. */
+  @media screen and (max-width:1100px) {
+    .slide { padding:56px 46px 76px; }
+    .columns, .columns.three, .columns.wide-left { grid-template-columns:1fr; gap:26px; }
+    .stats, .stats.three { grid-template-columns:1fr 1fr; }
+    .slide-brand, .slide-num { position:static; margin-bottom:10px; }
+  }
+  @page { size:A4 landscape; margin:0; }
+  @media print {
+    html, body { background:#0a0d1c; }
+    .slide { page-break-after:always; break-after:page;
+             min-height:100vh; height:100vh; box-shadow:none; border-bottom:none;
+             -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .slide:last-child { page-break-after:auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 1. TITLE + WHAT WE BUILT / WHAT IT PRODUCED -->
+<section class="slide">
+  <div class="slide-num">01 / 06</div>
+  <div class="eyebrow">Apart Research × CeSIA — AI Incident Response Sprint · Track 2</div>
+  <h1>Both Sides Detected It,<br />Neither Escalated</h1>
+  <h3 style="margin-top:16px; max-width:900px;">
+    Concurrency and escalation failure in the July 2026 autonomous agent intrusion —
+    a forensic reconstruction from seven public primary sources.
+  </h3>
+
+  <p class="lede mt" style="color:#ffffff;">
+    Detection was <b style="color:var(--accent);">not</b> the binding constraint at either
+    organisation. <b style="color:var(--accent);">Escalation was.</b>
+  </p>
+
+  <table class="cmp">
+    <thead><tr><th>What we built</th><th>What it produced</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="k">Ingestion pipeline over 7 cached primary sources, each parser asserting a reconciliation</td>
+        <td>16 derived datasets with content-hash provenance, 75 offline tests, and a manuscript whose every number is recomputed at build time</td>
+      </tr>
+      <tr>
+        <td class="k">Escalation reconstruction from the victim's and the perpetrator's own documents</td>
+        <td><b>5 h 34 min</b> from true-positive alert to response at OpenAI, with <b>8</b> further compromise events timestamped inside it</td>
+      </tr>
+      <tr>
+        <td class="k">Density-restricted concurrency measure, with its analytic bound computed before the statistic</td>
+        <td>A negative result: the extent statistics were confined in advance to a band <b>0.016</b> wide. Onset ordering replaces them</td>
+      </tr>
+      <tr>
+        <td class="k">EMR — an escalation-miss rate, with an ISA-18.2-style annotation that transfers between deployments</td>
+        <td>A failure mode that every current alert-screening metric scores as a <i>success</i> becomes measurable</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="signature">
+    <span class="dot"></span>
+    <span><b style="color:#e9ecf3;">Fatimah Emad Eldin</b> &nbsp;·&nbsp; AI Researcher, Trouve Labs</span>
+    <span class="dot"></span>
+    <span>github.com/astral-fate/agent-intrusion-escalation-forensics</span>
+  </div>
+</section>
+
+<!-- 2. THE HOOK -->
+<section class="slide">
+  <div class="slide-brand"><b>Both Sides Detected It</b> · The Hook</div>
+  <div class="slide-num">02 / 06</div>
+  <div class="eyebrow">The Hook</div>
+  <h2>Both organisations saw it. Neither woke anyone up.</h2>
+
+  <div class="columns">
+    <div>
+      <div class="quote">
+        However, it failed to correctly raise the alert's criticality and trigger the on-call team,
+        costing precious time in the response.
+        <cite>Hugging Face — its own technical timeline</cite>
+      </div>
+      <p class="mt-s">
+        The signals fired <b>and the correlation layer resolved them into a coherent attack
+        signal</b>. Only the step from that verdict to a page failed.
+      </p>
+    </div>
+    <div>
+      <div class="tile warn">
+        <h3>OpenAI — its own 38-page technical report, 19 July</h3>
+        <p><b style="color:#fff;">12:03 UTC</b> — cybersecurity monitoring raises an alert on unusual
+        identity-related API activity, recorded in the appendix as "later correlated to ExploitGym
+        evaluations". A true positive.</p>
+        <p><b style="color:#fff;">17:37 UTC</b> — responders begin stopping the active runs.</p>
+        <p style="color:var(--muted);">Host root on a managed Kubernetes node at 15:59. An Artifactory
+        administrator account created at 16:48. Both endpoints located by anchor substring on pages
+        37–38 of 38.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="v">5 h 34</div><div class="l">alert → response</div></div>
+    <div class="stat"><div class="v">8</div><div class="l">compromise events inside</div></div>
+    <div class="stat"><div class="v">2 / 2</div><div class="l">orgs detected, neither escalated</div></div>
+    <div class="stat"><div class="v">0</div><div class="l">press sources this rests on</div></div>
+  </div>
+
+  <p class="kicker">Detection fired. Escalation did not follow.</p>
+</section>
+
+<!-- 3. THE PROBLEM -->
+<section class="slide">
+  <div class="slide-brand"><b>Both Sides Detected It</b> · The Problem</div>
+  <div class="slide-num">03 / 06</div>
+  <div class="eyebrow">The Problem</div>
+  <h2>The received diagnosis sends the work in the wrong direction</h2>
+  <p class="lede">
+    Every public account attributes the outcome to <b>detection</b> — the campaign was not seen
+    soon enough. That diagnosis decides what gets built next, and the two readings diverge
+    completely.
+  </p>
+
+  <div class="columns mt">
+    <div class="tile">
+      <h3>If detection was the constraint</h3>
+      <p>More sensors. Better classifiers. Lower false-negative rates. A well-funded, well-understood
+      programme — and none of it would have changed this outcome.</p>
+    </div>
+    <div class="tile bad">
+      <h3>If escalation was the constraint</h3>
+      <p>The sensors were already sufficient. What failed is how a <b style="color:#fff;">correct</b>
+      verdict is ranked and routed — and nothing in the field measures that.</p>
+    </div>
+  </div>
+
+  <ul class="bullets">
+    <li><b>The failure is invisible to the metrics.</b> Alert screening is formalised over a binary
+      label space {malicious, benign} with three failure quantities — false-positive rate,
+      uninvestigated rate, decision-quality degradation. Each is satisfied by ŷ = y, so a correctly
+      classified alert ranked below the paging threshold scores as a <i>success on every one</i>.</li>
+    <li><b>Process safety has what security lacks.</b> EEMUA 191 and ANSI/ISA-18.2 publish a target
+      alarm-priority distribution — <span class="val">80 %</span> low,
+      <span class="val">15 %</span> medium, <span class="val">5 %</span> high — and the ASM
+      Consortium measured <span class="val">37</span> real operator consoles against it.</li>
+    <li><b>The checkable claim.</b> Security publishes no target distribution and no population study
+      of deviation from one. Priority <i>is</i> studied; a standard against which a priority can be
+      called <i>wrong</i> is not.</li>
+  </ul>
+
+  <p class="foot-note">
+    Not claimed: that Hugging Face's alarm configuration departs from 80/15/5. That configuration is
+    unpublished. The comparison is between two research literatures, not between an organisation and
+    a standard.
+  </p>
+</section>
+
+<!-- 4. METHODOLOGY / SYSTEM ARCHITECTURE -->
+<section class="slide">
+  <div class="slide-brand"><b>Both Sides Detected It</b> · Methodology</div>
+  <div class="slide-num">04 / 06</div>
+  <div class="eyebrow">Methodology · System Architecture</div>
+  <h2>A manuscript that cannot contradict its own artifacts</h2>
+
+  <div class="figbox">
+    <svg viewBox="0 0 1180 250" role="img"
+         aria-label="Pipeline: seven primary sources are fetched once and content-hashed; four parsers each assert a reconciliation and halt on failure; sixteen derived datasets feed two analyses; verify.py recomputes sixty-one claims into the manuscript template.">
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" fill="#22d3ee"/>
+        </marker>
+      </defs>
+
+      <rect class="box" x="0" y="34" width="168" height="92"/>
+      <text class="ttl" x="16" y="58">7 primary sources</text>
+      <text class="lbl" x="16" y="78">HF replay · timeline ·</text>
+      <text class="lbl" x="16" y="94">disclosure · OpenAI ×3 ·</text>
+      <text class="lbl" x="16" y="110">METR / Redwood</text>
+
+      <rect class="box accent" x="202" y="34" width="168" height="92"/>
+      <text class="ttl" x="218" y="58">sources.py</text>
+      <text class="lbl" x="218" y="78">fetch once, store bytes</text>
+      <text class="lbl" x="218" y="94">verbatim, SHA-256 +</text>
+      <text class="lbl" x="218" y="110">evidential class</text>
+
+      <rect class="box" x="404" y="34" width="168" height="92"/>
+      <text class="ttl" x="420" y="58">4 parsers</text>
+      <text class="lbl" x="420" y="78">replay · metr · hfblog ·</text>
+      <text class="lbl" x="420" y="94">openai_tr — each with</text>
+      <text class="lbl" x="420" y="110">a reconciliation gate</text>
+
+      <rect class="box" x="606" y="34" width="168" height="92"/>
+      <text class="ttl" x="622" y="58">data/</text>
+      <text class="lbl" x="622" y="78">16 typed datasets:</text>
+      <text class="lbl" x="622" y="94">envelopes, day counts,</text>
+      <text class="lbl" x="622" y="110">quotes, events</text>
+
+      <rect class="box" x="808" y="34" width="168" height="92"/>
+      <text class="ttl" x="824" y="58">analysis</text>
+      <text class="lbl" x="824" y="78">concurrency.py —</text>
+      <text class="lbl" x="824" y="94">density, onsets, bound</text>
+      <text class="lbl" x="824" y="110">escalation.py — lags</text>
+
+      <rect class="box accent" x="1010" y="34" width="170" height="92"/>
+      <text class="ttl" x="1026" y="58">verify.py</text>
+      <text class="lbl" x="1026" y="78">recomputes 61 claims</text>
+      <text class="lbl" x="1026" y="94">into the manuscript;</text>
+      <text class="lbl" x="1026" y="110">unknown key = failure</text>
+
+      <path class="arrow" marker-end="url(#ah)" d="M168 80 L198 80"/>
+      <path class="arrow" marker-end="url(#ah)" d="M370 80 L400 80"/>
+      <path class="arrow" marker-end="url(#ah)" d="M572 80 L602 80"/>
+      <path class="arrow" marker-end="url(#ah)" d="M774 80 L804 80"/>
+      <path class="arrow" marker-end="url(#ah)" d="M976 80 L1006 80"/>
+
+      <rect class="box warn" x="0" y="158" width="1180" height="72"/>
+      <text class="ttl" x="18" y="182" style="fill:#fbbf24;">RECONCILIATION GATES — a partial parse yields plausible output, not absent output, so every stage halts instead</text>
+      <text class="gate" x="18" y="204">day counts = cumulative curve = 17,613 published total</text>
+      <text class="gate" x="420" y="204">PDFs yield full page count, text from ≥ 80 % of pages</text>
+      <text class="gate" x="836" y="204">every declared quotation anchor found in cached bytes</text>
+      <text class="gate" x="18" y="222">escalation anchors must match exactly one appendix row — a reordered appendix fails loudly rather than silently returning the wrong pair</text>
+    </svg>
+  </div>
+
+  <div class="columns three mt-s">
+    <div class="tile">
+      <h3>Provenance travels with the data</h3>
+      <p>Class — primary, independent, secondary — is attached to the source, not remembered. An
+      upstream revision surfaces as a digest mismatch rather than a silent change.</p>
+    </div>
+    <div class="tile">
+      <h3>No number is typed by hand</h3>
+      <p>The manuscript is a template of placeholders. It holds no numbers of its own, so it cannot
+      disagree with the data — though that is consistency, <b style="color:#fff;">not</b> correctness.</p>
+    </div>
+    <div class="tile">
+      <h3>The source bytes are not redistributed</h3>
+      <p>The manifest ships each source's URL, byte count, fetch time and SHA-256; a re-fetch
+      yielding a different digest is reported, not accepted.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 5. RESULTS -->
+<section class="slide">
+  <div class="slide-brand"><b>Both Sides Detected It</b> · Results</div>
+  <div class="slide-num">05 / 06</div>
+  <div class="eyebrow">Results</div>
+  <h2 style="margin-bottom:14px;">One firm finding, one negative result</h2>
+
+  <div class="columns wide-left">
+    <div>
+      <table class="cmp dense-rows" style="margin-top:2px;">
+        <thead><tr><th>Phase</th><th class="n">Actions</th><th class="n">Onset</th><th class="n">Span</th><th>Class</th></tr></thead>
+        <tbody>
+          <tr class="dense"><td>recon</td><td class="n">6,191</td><td class="n">0.014</td><td class="n">0.986</td><td>dense</td></tr>
+          <tr class="dense"><td>rce</td><td class="n">2,911</td><td class="n">0.014</td><td class="n">0.981</td><td>dense</td></tr>
+          <tr class="dense"><td>dropper</td><td class="n">6,972</td><td class="n">0.032</td><td class="n">0.968</td><td>dense</td></tr>
+          <tr><td>exfil</td><td class="n">56</td><td class="n">0.109</td><td class="n">0.878</td><td>sparse</td></tr>
+          <tr><td>c2</td><td class="n">114</td><td class="n">0.122</td><td class="n">0.851</td><td>sparse</td></tr>
+          <tr><td>evasion</td><td class="n">6</td><td class="n">0.158</td><td class="n">0.697</td><td>sparse</td></tr>
+          <tr><td>k8s</td><td class="n">87</td><td class="n">0.517</td><td class="n">0.254</td><td>sparse</td></tr>
+          <tr><td>supply-chain</td><td class="n">69</td><td class="n">0.570</td><td class="n">0.424</td><td>sparse</td></tr>
+          <tr><td>tailscale</td><td class="n">115</td><td class="n">0.621</td><td class="n">0.373</td><td>sparse</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <div class="tile good">
+        <h3>Escalation — both halves primary</h3>
+        <p>A verbatim admission from the victim, and two anchored timestamps in OpenAI's own
+        appendix. <b style="color:#fff;">Neither half depends on press reporting</b>, so a reader who
+        rejects all secondary sourcing keeps this finding intact.</p>
+      </div>
+      <div class="tile mt-s">
+        <h3>Extent vs. onset</h3>
+        <p>Three dense phases carry <span class="val">16,074</span> of
+        <span class="val">16,521</span> labelled actions and begin within
+        <span class="val">1.8 %</span> of campaign time of one another; the last does not begin until
+        <span class="val">62.1 %</span>. The record is <b style="color:#fff;">ordered in onset and
+        coextensive in extent</b> — which defeats stage-<i>exclusive</i> response, not stage-keyed
+        response.</p>
+      </div>
+      <div class="tile bad mt-s">
+        <h3>The negative result</h3>
+        <p>Mean overlap <span class="val" style="color:#f87171;">0.998</span> and coextensivity
+        <span class="val" style="color:#f87171;">96.3 %</span> were originally the headline. They are
+        not findings: the spans alone confine them in advance to [0.984, 1] and [93.5 %, 96.8 %].</p>
+      </div>
+    </div>
+  </div>
+
+  <p class="foot-note" style="margin-top:14px;">
+    Envelopes are not duty cycles: the published summary gives only the two marginals of a
+    phase-by-day table whose interior is not public, so simultaneous <i>extent</i> is established
+    here and simultaneous <i>activity</i> is not.
+  </p>
+</section>
+
+<!-- 6. CONCLUSION -->
+<section class="slide">
+  <div class="slide-brand"><b>Both Sides Detected It</b> · Conclusion</div>
+  <div class="slide-num">06 / 06</div>
+  <div class="eyebrow">Conclusion</div>
+  <h2>The step from a correct verdict to a human interrupt is the one nobody measures</h2>
+
+  <div class="columns three">
+    <div class="tile">
+      <h3>What the record establishes</h3>
+      <p>At the victim, signals fired and were correlated into a coherent attack signal that was
+      never raised to a criticality triggering on-call. At the perpetrator, a true-positive alert
+      preceded the response by <span class="val">5 h 34 min</span>. Detection was not the binding
+      constraint at either organisation.</p>
+    </div>
+    <div class="tile good">
+      <h3>What we propose</h3>
+      <p><b style="color:#fff;">EMR</b> — an escalation-miss rate conditioned on a locally defined
+      threshold and reported with its dual — plus an annotation of (consequence class, response
+      window) that transfers between deployments. The adoption cost is annotation, not modelling.</p>
+    </div>
+    <div class="tile">
+      <h3>What we release</h3>
+      <p>The corpus, the pipeline and the verification harness, so the same measurement can be run on
+      the next such record. Publishing the phase-by-day interior would cost no disclosure and convert
+      our extent bound into a real duty-cycle measurement.</p>
+    </div>
+  </div>
+
+  <div class="stats three">
+    <div class="stat"><div class="v">7</div><div class="l">primary sources, hashed</div></div>
+    <div class="stat"><div class="v">61</div><div class="l">claims recomputed at build</div></div>
+    <div class="stat"><div class="v">75</div><div class="l">offline tests</div></div>
+  </div>
+
+  <p class="foot-note">
+    <b style="color:#cdd3e3;">Stated limits.</b> One campaign, n = 1; no inferential statistic is
+    reported and none would be appropriate. No value of EMR is claimed for this incident — Hugging
+    Face's escalation policy is unpublished, so the metric is an instrument, not a measurement. Two
+    timeline dates rest on anonymously-sourced press reporting, and every interval depending on them
+    is flagged.
+  </p>
+
+  <div class="signature">
+    <span class="dot"></span>
+    <span>github.com/astral-fate/agent-intrusion-escalation-forensics</span>
+    <span class="dot"></span>
+    <span>huggingface.co/datasets/FatimahEmadEldin/agent-intrusion-escalation-forensics</span>
+  </div>
+</section>
+
+</body>
+</html>
