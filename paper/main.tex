@@ -36,12 +36,23 @@
 \setlength{\intextsep}{10pt plus 2pt minus 2pt}
 \setlength{\abovecaptionskip}{5pt}
 
+% Heading whitespace, not prose, was what pushed the references onto a ninth page: at this
+% structure (nine sections, twelve subsections) article's default skips cost about a third of
+% a page. These are the class defaults with the leading skip reduced.
+% (written without %-continuations: a bare % anywhere outside a comment line is a build guard
+% in tests/test_verify.py, since a substituted value carrying one would silently truncate.)
+\makeatletter
+\renewcommand\section{\@startsection{section}{1}{\z@}{-2.6ex \@plus -1ex \@minus -.2ex}{1.4ex \@plus .2ex}{\normalfont\large\bfseries}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}{-2.2ex \@plus -1ex \@minus -.2ex}{1.0ex \@plus .2ex}{\normalfont\normalsize\bfseries}}
+\makeatother
+
 \title{\textbf{Both Sides Detected It, Neither Escalated:}\\
 Concurrency and Escalation Failure in the\\
 July 2026 Autonomous Agent Intrusion}
-\author{Fatimah Emad Eldin\\\small Independent Researcher\\\small\texttt{Fatimah@trouve.works}}
+\author{Fatimah Emad Eldin\\\small AI Researcher, Trouve Labs\\\small\texttt{Fatimah@trouve.works}}
 \date{11 September 2026\\\small Apart Research \& CeSIA --- AI Incident
-Response Sprint, Track 2 (Forensics and Forecasting)}
+Response Sprint, Track 2 (Forensics and Forecasting)\\[3pt]
+\small Code, data and this report: \url{https://github.com/astral-fate/agent-intrusion-escalation-forensics}}
 
 \begin{document}
 \maketitle
@@ -53,17 +64,17 @@ response failure as a detection failure. Against the published forensic
 record --- 7 primary sources, a reproducible pipeline ---
 detection was not the binding constraint at either organisation. The
 victim's signals fired, were correlated into a coherent attack signal,
-and were not raised to a criticality that paged anyone. The
+and were never raised to a criticality that paged anyone. The
 perpetrator's own appendix timestamps a monitoring alert at
 12:03 UTC and responders halting the runs
 5h34m later, with 8 further
-compromise events recorded inside that interval. We argue this failure
---- correct class, insufficient priority --- satisfies every quantity
-current alert-screening formalisations define, and that security has no
-published target priority distribution against which it could be
-measured, unlike process-safety alarm management. We report phase
-extents and onsets, and the arithmetic bound that makes the extent
-statistics uninformative.
+compromise events inside that interval. We argue this failure ---
+correct class, insufficient priority --- satisfies every quantity
+current alert-screening formalisations define, and that security, unlike
+process-safety alarm management, publishes no target priority
+distribution against which it could be measured. We also report the
+arithmetic bound that makes the phase-extent statistics
+uninformative.
 \end{abstract}
 
 %====================================================================
@@ -121,15 +132,15 @@ and audits, and which security alert screening does not.
 
 Incident response practice is organised around staged models of
 attacker behaviour: the intrusion kill chain \cite{hutchins2011} and
-the tactic ordering of MITRE ATT\&CK \cite{mitreattack}. These are not
-merely descriptive --- detection playbooks are keyed to stage
-boundaries, and the stage an intrusion has reached is a routine input
-to escalation decisions. What they claim needs care: neither asserts
-that phase intervals are \emph{disjoint}, only an ordering of stage
-\emph{onsets} and a notion of the furthest stage reached. Onset and
-extent are separately testable wherever a record annotates actions by
-phase and timestamp, and \S\ref{sec:concurrency} reports both --- with
-the result that they disagree.
+the tactic ordering of MITRE ATT\&CK \cite{mitreattack}. Detection
+playbooks are keyed to stage boundaries, and the stage an intrusion has
+reached is a routine input to escalation decisions. What these models
+claim needs care: neither asserts that phase intervals are
+\emph{disjoint}, only an ordering of stage \emph{onsets} and a notion
+of the furthest stage reached. Both are separately testable wherever a
+record annotates actions by phase and timestamp, and
+\S\ref{sec:concurrency} reports both --- with the result that they
+disagree.
 
 \subsection{Alert triage and screening}
 \label{sec:related-triage}
@@ -183,14 +194,13 @@ recorded in a manifest with its SHA-256 digest, byte length, HTTP
 status, retrieval time and an evidential class (\ref{app:prov}). All
 later processing reads the cache, so results are reproducible from a
 fixed snapshot and an upstream revision surfaces as a digest mismatch
-rather than being absorbed silently.
+rather than being absorbed.
 
-\subsection{What the corpus does not contain}
-
-The raw 17,613-action log and the approximately 1{,}300
-agent transcripts were reviewed on-premises and have not been released
-\cite{metr2026}. What is public is a \emph{derived} summary:
-phase-level aggregates, per-day counts, a cumulative activity curve and
+What the corpus does \emph{not} contain bounds every result below. The
+raw 17,613-action log and the approximately 1{,}300 agent
+transcripts were reviewed on-premises and never released
+\cite{metr2026}; what is public is a \emph{derived} summary of
+phase-level aggregates, per-day counts, a cumulative curve and
 representative commands. No analysis here requires individual actions,
 inter-arrival times or per-agent attribution.
 
@@ -202,32 +212,30 @@ inter-arrival times or per-agent attribution.
 \subsection{Extraction and validation}
 
 Ingestion recovers the replay's embedded literals with a scanner that
-tracks string state, parses the investigation PDF page-by-page with
-page locators retained, parses the technical timeline into sections and
-captured command blocks, and assembles a normalised event chronology.
-Because a partially-successful parse yields plausible rather than
-absent output, each stage asserts a reconciliation condition and halts
-on failure --- per-day counts against the cumulative curve and the
-published total, page counts and text-recovery rate for each PDF, and
-every declared quotation anchor located in the cached bytes.
-\ref{app:prov} gives the yields and the two parser failure modes this
-caught.
+tracks string state, parses each PDF page-by-page with page locators
+retained, parses the technical timeline into sections and captured
+command blocks, and assembles a normalised event chronology. Because a
+partially-successful parse yields plausible rather than absent output,
+each stage asserts a reconciliation condition and halts on failure ---
+per-day counts against the cumulative curve and the published total,
+page counts and text-recovery rate for each PDF, and every declared
+quotation anchor located in the cached bytes. \ref{app:prov} gives the
+yields and the two parser failure modes this caught.
 
 \subsection{Phase concurrency and its bound}
 \label{sec:conc-method}
 
 Normalise campaign time to $[0,1]$. The replay annotates each phase $p$
 with first and last action times, giving an \emph{envelope}
-$E_p=[f_p,\ell_p]$ of span $\sigma_p$, and an action count $n_p$. An
+$E_p=[f_p,\ell_p]$ of span $\sigma_p$ and an action count $n_p$. An
 envelope is not a duty cycle: a phase with few actions dispersed across
 the campaign has a wide envelope while being almost never active. We
-therefore define density $\delta_p = n_p/\sigma_p$ and restrict
-inference to the dense set $D=\{p: n_p \geq \tau\}$,
-$\tau=1,000$ actions. For $a,b$ we measure envelope
-overlap normalised by the shorter envelope,
-$O(a,b) = |E_a \cap E_b| / \min(\sigma_a,\sigma_b)$, and write $\Phi_D$
-for the measure of $t$ at which every dense phase is within its
-envelope.
+therefore define density $\delta_p = n_p/\sigma_p$, restrict inference
+to the dense set $D=\{p: n_p \geq \tau\}$ with
+$\tau=1,000$ actions, measure overlap
+$O(a,b) = |E_a \cap E_b| / \min(\sigma_a,\sigma_b)$, and write
+$\Phi_D$ for the measure of $t$ at which every dense phase is within
+its envelope.
 
 \paragraph{Why these two statistics are not reported as findings.}
 Both are bounded by the spans alone: two intervals in $[0,1]$ intersect
@@ -265,19 +273,373 @@ artifacts; it does not establish that a measure is appropriate --- see
 
 \subsection{Phase density and envelopes}
 
-Of the 9 annotated phases, 3 ---
-reconnaissance, remote code execution and dropper activity --- exceed
-the density threshold and account for 16,074 of the
-16,521 labelled actions (97.3\%). The remaining
-6 are sparse: the \texttt{evasion} phase spans
-70\% of the campaign on 6 actions,
-illustrating precisely the envelope artefact that motivates the density
-restriction. Figure~\ref{fig:phases} shows the envelopes;
-Table~\ref{tab:phases} in \ref{app:conc} gives the underlying onsets,
-spans and densities.
+Table~\ref{tab:phases} is the quantitative basis for this section: one
+row per phase, giving where it starts, how much of the campaign it
+covers, and how many actions it carries per unit of that coverage. Read
+the last two columns together --- a wide span means little on its own,
+and density is what separates a phase that ran throughout from one
+whose few actions fall far apart.
+
+Of the 9 phases, 3 --- reconnaissance,
+remote code execution and dropper activity --- exceed the density
+threshold and account for 16,074 of the 16,521
+labelled actions (97.3\%). The remaining 6
+are sparse: \texttt{evasion} spans 70\% of the campaign
+on 6 actions, illustrating precisely the envelope
+artefact that motivates the density restriction.
+
+\begin{table}[tbp]
+\centering
+\footnotesize
+\begin{tabular}{lrrrrl}
+\toprule
+Phase & Actions & Onset & Envelope span & Actions per 1\% & Class \\
+\midrule
+recon & 6,191 & 0.014 & 0.986 & 62.8 & \textbf{dense} \\
+rce & 2,911 & 0.014 & 0.981 & 29.7 & \textbf{dense} \\
+dropper & 6,972 & 0.032 & 0.968 & 72.0 & \textbf{dense} \\
+exfil & 56 & 0.109 & 0.878 & 0.6 & sparse \\
+c2 & 114 & 0.122 & 0.851 & 1.3 & sparse \\
+evasion & 6 & 0.158 & 0.697 & 0.1 & sparse \\
+k8s & 87 & 0.517 & 0.254 & 3.4 & sparse \\
+supply--chain & 69 & 0.570 & 0.424 & 1.6 & sparse \\
+tailscale & 115 & 0.621 & 0.373 & 3.1 & sparse \\
+\bottomrule
+\end{tabular}
+\caption{Phase onsets, envelopes and densities, ordered by onset.
+Onset $f_p$ and span $\sigma_p$ are fractions of the campaign; density
+is $\delta_p$ per 1\% of campaign time. The three dense phases begin
+together and run throughout; the six sparse phases begin progressively
+later. Extent statistics computed from the span column are bounded in
+advance --- \S\ref{sec:conc-method}.}
+\label{tab:phases}
+\end{table}
 
 \subsection{Extent, onset, and what each can support}
 \label{sec:concurrency}
+
+
+\paragraph{Extent, reported as a bound.} Among dense phases the mean
+pairwise overlap is $\overline{O}=0.998$ (minimum
+0.996) and $\Phi_D=96.3\%$; across all
+9 phases mean overlap is 0.959. Per
+\S\ref{sec:conc-method} these were confined in advance to
+$[0.984,1]$ and $[93.5\%,96.8\%]$, so they
+are reported for completeness and not offered as findings. The
+substantive content is the spans themselves: reconnaissance spans
+98.6\% of the campaign, continuing to its final minutes
+rather than preceding exploitation, and the other two dense phases are
+similar. That supports a statement about \emph{extent} --- no dense
+phase occupies a distinct segment --- but not one about simultaneous
+\emph{activity} (L3). Figure~\ref{fig:phases} draws the nine envelopes
+against the campaign window.
+
+\paragraph{Onset, which is what a staged model predicts.} Extent is the
+wrong test: a kill chain \cite{hutchins2011} orders stage onsets and
+does not claim their extents are disjoint. Onsets are recoverable and
+divide cleanly. The three dense phases begin within
+1.8\% of campaign time of one another --- for
+practical purposes together, at the campaign's opening --- while the
+remaining phases begin progressively later, the last not until
+62.1\% of the campaign has elapsed. The record is therefore
+\emph{ordered in onset and coextensive in extent}, and the two are not
+in conflict: a campaign can begin reconnaissance, exploitation and
+staging together and still acquire Kubernetes, supply-chain and
+network-pivot capability only much later.
+
+\paragraph{Consequence for stage-keyed response.} A controller asking
+``has this reached RCE yet?'' receives a well-defined answer from
+onsets, so stage-keyed branching keeps its input. What fails is
+stage-\emph{exclusive} branching --- any control that assumes the
+current stage is the only one running. Here reconnaissance,
+exploitation and staging were all still running at the final recorded
+action (\ref{app:emr}).
+
+\subsection{Escalation intervals}
+\label{sec:escalation}
+
+Detection succeeded at the victim. Hugging Face reports that an alert
+fired and states its consequence directly \cite{hf_timeline}:
+
+\begin{quote}
+``However, it failed to correctly raise the alert's criticality and trigger the on-call team, costing precious time in the response.''
+\end{quote}
+
+The alert was classified correctly and prioritised incorrectly, so the
+on-call path was never taken. Note what did \emph{not} fail: the
+signals fired, and the correlation layer resolved them into a coherent
+attack signal. Only the step from that verdict to a page failed.
+
+\paragraph{The perpetrator.} The same step failed at OpenAI, and its
+own technical report timestamps it \cite{openai_techreport}. At
+12:03 UTC on 19 July its cybersecurity monitoring raised an
+alert on unusual identity-related API activity against internal
+research Artifactory roles, which the appendix records as ``later
+correlated to ExploitGym evaluations'' --- a true positive. Responders
+began stopping the active runs at 17:37 UTC,
+5~hours 34~minutes later (5.57~h),
+with 8 further compromise events timestamped inside
+that interval --- among them initial-namespace root on a managed
+Kubernetes node and the creation of an Artifactory administrator
+account.
+
+\paragraph{What this interval is, and is not.} It is a
+detection-to-response interval within one organisation, taken from that
+organisation's own record --- the perpetrator-side counterpart to the
+victim's un-escalated alert. It is \emph{not} an attribution interval:
+OpenAI states that at the time of the alert ``there was no indication
+of a relationship between that July 19 activity and the Hugging Face
+incident.'' The 4.00-day figure in
+Table~\ref{tab:lags} measures how long attribution took, is
+press-sourced, is marked \emph{secondary}, and carries no part of this
+argument. Both timestamps come from the 38-page report's
+69-entry appendix --- the alert on page
+37, the response on page 38 --- each
+located by anchor substring rather than row position
+(\ref{app:prov}).
+
+\paragraph{The surrounding disclosure path.} Table~\ref{tab:lags} places
+those minutes in the wider chronology, and the contrast is why it is
+here: every interval in the table is an \emph{organisational} latency
+measured in days --- public disclosure 2.41 days
+after the last recorded agent action, OpenAI's acknowledgement
+11.90 days after the first, the independent
+investigation 43.41 days after the campaign ended --- and
+each has an identifiable owner and an established norm. The two
+escalation failures above are measured in hours and minutes inside a
+single shift, and it is those the response literature has no metric
+for. Its rightmost column gives the weakest source each interval rests
+on. Activity was also strongly non-uniform ---
+07-11 alone carries 43.6\% of all recorded
+actions --- so response throughput is governed by queue ordering.
+
+\begin{table}[tbp]
+\centering
+\footnotesize
+\begin{tabular}{lrl}
+\toprule
+Interval & Days & Weakest source \\
+\midrule
+First recorded agent action $\rightarrow$ Last recorded agent action & 4.49 & primary \\
+Last recorded agent action $\rightarrow$ Hugging Face discloses publicly & 2.41 & primary \\
+First recorded agent action $\rightarrow$ OpenAI connects its evaluation to the intrusion & 10.90 & secondary \\
+Hugging Face discloses publicly $\rightarrow$ OpenAI connects its evaluation to the intrusion & 4.00 & secondary \\
+First recorded agent action $\rightarrow$ OpenAI acknowledges publicly & 11.90 & primary \\
+Last recorded agent action $\rightarrow$ METR/Redwood independent investigation published & 43.41 & primary \\
+\bottomrule
+\end{tabular}
+\caption{Escalation intervals across the disclosure path, for context
+rather than argument (\S\ref{sec:escalation}). Intervals depending on a
+press-sourced date are marked \emph{secondary}; no claim in this paper
+rests on one.}
+\label{tab:lags}
+\end{table}
+
+%====================================================================
+\section{Error analysis}
+\label{sec:corrections}
+%====================================================================
+
+\subsection{The phase annotation is not a partition}
+
+Per-phase totals sum to 16,521 against 17,613
+recorded actions, a shortfall of 1,092 actions
+(6.2\%). The multi-tagging explanation that appears in
+secondary summaries of this incident is inconsistent with the data:
+assigning several tags to one action drives the sum \emph{above} the
+total, not below it. Either tags attach to action clusters rather than
+actions, or a residual fraction is unclassified; the source does not
+disambiguate. Phase annotations are therefore treated here as a
+non-exhaustive labelling, and no result depends on their being a
+partition. A second error in the inherited record, a quotation
+attributed to the wrong post, is in \ref{app:prov}.
+
+%====================================================================
+\section{Discussion}
+%====================================================================
+
+\subsection{A representational gap}
+\label{sec:gap}
+
+The failure that determined this incident's outcome was neither a
+missed detection nor a false positive: the alert existed and its class
+was correct, its priority was not, and no escalation followed. Within
+the binary label space of the field's formalisation \cite{ndichu2026}
+that event is indistinguishable from a success --- a malicious sample
+labelled malicious, with every failure quantity defined satisfied by
+$\hat{y}=y$.
+
+The claim has to be put precisely, because the obvious stronger version
+is false. Security \emph{does} study prioritisation
+(\S\ref{sec:related-triage}); what that work optimises is ranking
+\emph{quality}. What it does not supply --- and what no security source
+we could find supplies --- is a \emph{target} against which a ranking
+can be called wrong, or a study measuring real deployments against one.
+Process safety has had both for decades
+\cite{eemua191,isa182,reising2005asm}. The gap is not that security
+ignores priority, nor that the problem is hard; it is the absence of a
+published benchmark distribution and of the population study a
+benchmark makes possible. We do not claim Hugging Face's alarm
+configuration departs from the
+80/15/5 target, which is
+unpublished: the comparison is between two literatures, not between an
+organisation and a standard.
+
+\subsection{A metric that would make the failure visible}
+\label{sec:emr}
+
+A benchmark whose label space is binary cannot represent the failure
+that decided this incident, so no measured progress against it would
+have prevented the outcome. The extension required is small, and
+changes the annotation rather than the model class.
+
+Let an alert carry a true class $y \in \{m, b\}$ and, when $y = m$, a
+true urgency tier $u \in \{1,\dots,P\}$ assigned as ISA-18.2
+rationalisation assigns one, from consequence severity and the time
+available to respond \cite{isa182}. Let a screener emit
+$(\hat{y},\hat{u})$, and $u^{*}$ be the tier at which an
+organisation's policy triggers out-of-band escalation. Alongside the
+rates already defined \cite{ndichu2026}, define the
+\emph{escalation-miss rate}
+\begin{equation}
+\mathrm{EMR} = \Pr\!\left(\hat{u} < u^{*} \,\middle|\,
+  y = m,\; \hat{y} = m,\; u \geq u^{*}\right),
+\end{equation}
+the proportion of correctly classified malicious alerts ranked below
+the escalation threshold --- invisible to every metric currently
+reported, each satisfied by $\hat{y}=y$. It must be reported with its
+dual, the escalation-\emph{promotion} rate over alerts with
+$u < u^{*}$: otherwise a screener drives EMR to zero by promoting
+everything, reproducing the saturation that makes under-prioritisation
+rational under load. That is why the process-safety target is a
+\emph{distribution} rather than a floor on high-priority recall.
+
+Since $u^{*}$ is organisation-specific, a bare tier $u$ would not
+transfer between deployments; \ref{app:emr} gives the
+organisation-independent annotation that fixes this.
+
+%====================================================================
+\section{Conclusion}
+%====================================================================
+
+The July 2026 intrusion is widely described as a campaign defeated by
+insufficient detection. The public record does not support that
+description. At the victim, signals fired and were correlated into a
+coherent attack signal that was never raised to a criticality
+triggering on-call; at the perpetrator, a true-positive monitoring
+alert preceded the response by
+5~hours~34~minutes, with 8
+further compromise events in between. The binding constraint at both
+organisations was the step from a correct verdict to a human interrupt.
+Process safety benchmarks that error against a published target
+distribution; security has neither the target nor the population study.
+We propose the metric and annotation that would permit both, and
+release the corpus, pipeline and harness so they can be applied to the
+next such record.
+
+\section{Limitations and Dual-Use Considerations}
+\label{sec:limits}
+
+\paragraph{The two findings are not equally well evidenced.} The
+escalation result is the firm one: both halves are primary --- a direct
+quotation from the victim \cite{hf_timeline}, and two timestamps in
+OpenAI's own appendix \cite{openai_techreport} located by anchor string
+in a hashed copy --- so a reader who rejects all secondary sourcing
+keeps \S\ref{sec:escalation} intact. The concurrency result is weaker,
+for the two reasons given where it is reported (L3, and the bound of
+\S\ref{sec:conc-method}); a reader who discounts
+\S\ref{sec:concurrency} entirely is left with the escalation finding
+and the representational argument it motivates, which is unaffected.
+
+\paragraph{Further limitations.}
+\begin{description}[leftmargin=*,itemsep=2pt,style=unboxed]
+\item[(L1) Single incident.] All results describe one campaign. No
+inferential statistic is reported and none would be appropriate;
+nothing here establishes a base rate.
+
+\item[(L2) Derived data.] The raw action log and agent transcripts are
+unreleased, and aggregation choices in the published summary are the
+publisher's and cannot be audited from outside.
+
+\item[(L3) Envelopes are not duty cycles.] Concurrency is estimated
+from interval endpoints, which is why inference is restricted to dense
+phases (\S\ref{sec:conc-method}, \ref{app:conc}) and the unrestricted
+figure is reported alongside. Simultaneous \emph{activity} is not
+established by this paper.
+
+\item[(L4) Secondary-sourced dates.] Two events --- OpenAI's internal
+identification and the 5 August conference disclosure --- rest on
+anonymously-sourced press reporting. 5 of
+7 events are anchored in cached primary sources, and
+every dependent interval is marked (Table~\ref{tab:lags}).
+
+\item[(L5) Paywalled standards.] The
+80/15/5 target is corroborated
+across independent industry sources rather than retrieved from EEMUA
+191 or ISA-18.2 directly.
+
+\item[(L6) Verification establishes consistency, not correctness.] The
+build guarantees that reported values match the artifacts they derive
+from. It cannot detect an inappropriate measure or a mis-specified
+source.
+
+\item[(L7) EMR is unmeasured here.] Hugging Face's escalation policy
+and alarm configuration are unpublished, so no value of EMR is claimed
+(\ref{app:emr}); the metric is an instrument, not a measurement.
+\end{description}
+
+\paragraph{Dual use.} This paper reports aggregate campaign structure
+and timing derived from already-public material. It contains no
+exploit, payload or capability uplift; the captured commands it draws
+on were published by the victim with credentials and hostnames
+redacted; no novel installation recipe, intrusion technique or evasion
+method is described; and nothing withheld by the primary sources is
+reconstructed. The findings are defensive, arguing for changes to alert
+prioritisation and to the evaluation of screening systems. The
+foreseeable misuse --- an adversary inferring that interleaved phases
+degrade stage-keyed playbooks --- carries low marginal risk, since that
+interleaving is present in the victim's own published artifact. The
+released repository contains parsers and derived aggregates only.
+
+\paragraph{LLM-assisted authoring.} The author used Claude Opus 5 for
+source retrieval, prose drafting and code review. The research
+question, the density-restricted concurrency measure, the escalation
+reconstruction, the comparison between the two literatures, the
+ingestion and verification design, and all judgements about what the
+evidence supports are the author's own. All quotations were retrieved
+from primary sources and are located by page or anchor.
+
+%====================================================================
+\section*{Availability}
+%====================================================================
+
+Corpus retrieved 2026-09-04; OpenAI's technical report added
+2026-09-05. Code and data: \url{https://github.com/astral-fate/agent-intrusion-escalation-forensics} (MIT; derived data CC BY
+4.0), mirrored as a Hugging Face dataset at
+\url{https://hf.co/datasets/FatimahEmadEldin/agent-intrusion-escalation-forensics}.
+The 7 cached third-party artifacts are \emph{not}
+redistributed: \texttt{cache/manifest.json} ships their URLs, byte
+counts, fetch times and SHA-256 digests instead, and a re-fetch that
+yields a different digest is reported rather than silently accepted.
+Environment and commands: \ref{app:repro}.
+
+% Set one size down: fifteen entries whose URLs are mostly unbreakable would otherwise take
+% the references past the 8-page limit on their own.
+{\scriptsize
+\bibliographystyle{plainurl}
+\bibliography{references}
+}
+
+\clearpage
+%====================================================================
+\appendix
+%====================================================================
+% Headings and cross-references both read "Appendix A" rather than a bare letter, so \ref
+% carries the word and call sites must not prepend it themselves.
+\renewcommand{\thesection}{Appendix~\Alph{section}}
+
+\section{The concurrency measure and its bound}
+\label{app:conc}
 
 \begin{figure}[t]
 \centering
@@ -321,344 +683,6 @@ phases, whose onsets are ordered and extend to 62.1\%.
 Generated from the data, not drawn by hand.}
 \label{fig:phases}
 \end{figure}
-
-\paragraph{Extent, reported as a bound.} Among dense phases the mean
-pairwise overlap is $\overline{O}=0.998$ (minimum
-0.996) and $\Phi_D=96.3\%$; across all
-9 phases mean overlap is 0.959. Per
-\S\ref{sec:conc-method} these were confined in advance to
-$[0.984,1]$ and $[93.5\%,96.8\%]$, so they
-are reported for completeness and not offered as findings. The
-substantive content is the spans themselves: reconnaissance spans
-98.6\% of the campaign, continuing to its final minutes
-rather than preceding exploitation, and the other two dense phases are
-similar. That supports a statement about \emph{extent} --- no dense
-phase occupies a distinct segment --- but not one about simultaneous
-\emph{activity} (L3).
-
-\paragraph{Onset, which is what a staged model predicts.} Extent is the
-wrong test: a kill chain \cite{hutchins2011} orders stage onsets and
-does not claim their extents are disjoint. Onsets are recoverable and
-divide cleanly. The three dense phases begin within
-1.8\% of campaign time of one another --- for
-practical purposes together, at the campaign's opening --- while the
-remaining phases begin progressively later, the last not until
-62.1\% of the campaign has elapsed. The record is therefore
-\emph{ordered in onset and coextensive in extent}, and the two are not
-in conflict: a campaign can begin reconnaissance, exploitation and
-staging together and still acquire Kubernetes, supply-chain and
-network-pivot capability only much later.
-
-\paragraph{Consequence for stage-keyed response.} A controller asking
-``has this reached RCE yet?'' receives a well-defined answer from
-onsets, so stage-keyed branching keeps its input. What fails is
-stage-\emph{exclusive} branching --- any control that assumes the
-current stage is the only one running, or treats reconnaissance as
-concluded once exploitation is observed. Here reconnaissance,
-exploitation and staging were all still running at the final recorded
-action.
-
-\subsection{Escalation intervals}
-\label{sec:escalation}
-
-Detection succeeded at the victim. Hugging Face reports that an alert
-fired and states its consequence directly \cite{hf_timeline}:
-
-\begin{quote}
-``However, it failed to correctly raise the alert's criticality and trigger the on-call team, costing precious time in the response.''
-\end{quote}
-
-The alert was classified correctly and prioritised incorrectly, so the
-on-call path was never taken. Note what did \emph{not} fail: the
-signals fired, and the correlation layer resolved them into a coherent
-attack signal. Only the step from that verdict to a page failed.
-
-\paragraph{The perpetrator.} The same step failed at OpenAI, and its
-own technical report timestamps it \cite{openai_techreport}. At
-12:03 UTC on 19 July its cybersecurity monitoring raised an
-alert on unusual identity-related API activity against internal
-research Artifactory roles, which the appendix records as ``later
-correlated to ExploitGym evaluations'' --- a true positive on the
-agents' activity. Responders began stopping the active runs at
-17:37 UTC, 5~hours 34~minutes
-later (5.57~h), with 8 further compromise
-events timestamped inside that interval --- among them
-initial-namespace root on a managed Kubernetes node and the creation of
-an Artifactory administrator account.
-
-\paragraph{What this interval is, and is not.} It is a
-detection-to-response interval within a single organisation, taken from
-that organisation's own record --- the perpetrator-side counterpart to
-the victim's un-escalated alert. It is \emph{not} an attribution
-interval: OpenAI states that at the time of the alert ``there was no
-indication of a relationship between that July 19 activity and the
-Hugging Face incident.'' The 4.00-day figure in
-Table~\ref{tab:lags} measures how long attribution took, is
-press-sourced, is marked \emph{secondary}, and carries no part of this
-paper's argument. Both timestamps are read from the appendix of the
-38-page report, which carries 69 entries
-in total --- the alert on page 37, the response on page
-38 --- each located by anchor substring rather than
-row position (\ref{app:prov}).
-
-\paragraph{The surrounding disclosure path.} The organisational
-latencies around the incident span weeks --- public disclosure
-2.41 days after the last recorded agent action,
-OpenAI's acknowledgement 11.90 days after the first, the
-independent investigation 43.41 days after the campaign
-ended (Table~\ref{tab:lags}). The two escalation failures above are
-measured in hours and minutes inside a single shift, and it is the
-latter the response literature has no metric for. Activity was also
-strongly non-uniform --- 07-11 alone carries
-43.6\% of all recorded actions --- so response throughput
-is governed by queue ordering rather than coverage.
-
-%====================================================================
-\section{Error analysis}
-\label{sec:corrections}
-%====================================================================
-
-\subsection{The phase annotation is not a partition}
-
-Per-phase totals sum to 16,521 against 17,613
-recorded actions, a shortfall of 1,092 actions
-(6.2\%). The multi-tagging explanation that appears in
-secondary summaries of this incident is inconsistent with the data:
-assigning several tags to one action drives the sum \emph{above} the
-total, not below it. Either tags attach to action clusters rather than
-actions, or a residual fraction is unclassified; the source does not
-disambiguate. Phase annotations are therefore treated here as a
-non-exhaustive labelling, and no result depends on their being a
-partition. A second error in the inherited record --- a quotation
-attributed to the wrong post --- is in \ref{app:prov}, with the two
-parser failure modes that would each have produced a plausible but
-silently incomplete dataset.
-
-%====================================================================
-\section{Discussion}
-%====================================================================
-
-\subsection{A representational gap}
-\label{sec:gap}
-
-The failure that determined this incident's outcome was neither a
-missed detection nor a false positive. The alert existed and its class
-was correct; its priority was not, and no escalation followed. Within
-the binary label space of the field's formalisation \cite{ndichu2026}
-this event is indistinguishable from a success: a malicious sample was
-labelled malicious, and every failure quantity defined is satisfied by
-$\hat{y}=y$.
-
-The claim has to be put precisely, because the obvious stronger version
-is false. Security \emph{does} study prioritisation
-(\S\ref{sec:related-triage}), and what that work optimises is ranking
-\emph{quality}. What it does not supply --- and what no security source
-we could find supplies --- is a \emph{target} against which a
-particular ranking can be called wrong, or a study measuring real
-deployments against such a target. Process safety has had both for
-decades \cite{eemua191,isa182,reising2005asm}. The gap is not that
-security ignores priority, nor that the problem is conceptually hard;
-it is the absence of a published benchmark distribution and of the
-population study a benchmark makes possible. We do not claim that
-Hugging Face's alarm configuration departs from the
-80/15/5 target, which is
-unpublished: the comparison is between two research literatures, not
-between an organisation and a standard.
-
-\subsection{A metric that would make the failure visible}
-\label{sec:emr}
-
-An alert-screening benchmark whose label space is binary cannot
-represent the failure that decided this incident, so no measured
-progress against it would have prevented the outcome. The extension
-required is small, and changes the annotation rather than the model
-class.
-
-Let an alert carry a true class $y \in \{m, b\}$ and, when $y = m$, a
-true urgency tier $u \in \{1,\dots,P\}$ assigned as ISA-18.2
-rationalisation assigns one, from consequence severity and the time
-available to respond \cite{isa182}. Let a screener emit
-$(\hat{y},\hat{u})$, and let $u^{*}$ be the tier at which an
-organisation's policy triggers out-of-band escalation. Alongside the
-rates already defined \cite{ndichu2026}, define the
-\emph{escalation-miss rate} and its dual, to be reported together:
-\begin{equation}
-\mathrm{EMR} = \Pr\!\left(\hat{u} < u^{*} \,\middle|\,
-  y = m,\, \hat{y} = m,\, u \geq u^{*}\right),
-\qquad
-\mathrm{EPR} = \Pr\!\left(\hat{u} \geq u^{*} \,\middle|\,
-  y = m,\, \hat{y} = m,\, u < u^{*}\right).
-\end{equation}
-EMR is the proportion of correctly classified malicious alerts ranked
-below the escalation threshold --- invisible to every metric currently
-reported, each satisfied by $\hat{y}=y$. Without EPR a screener drives
-EMR to zero by promoting everything, reproducing the saturation that
-makes under-prioritisation rational under load, which is why the
-process-safety target is a \emph{distribution} rather than a floor on
-high-priority recall.
-
-Since $u^{*}$ is organisation-specific, a bare tier $u$ would not
-transfer between deployments. The fix is to annotate each malicious
-alert with the pair (consequence class, response window) that ISA-18.2
-rationalisation already uses as its inputs \cite{isa182}, both
-properties of the event; each organisation then supplies its own map to
-a tier and its own $u^{*}$, so the corpus stays portable while the
-threshold stays local. The adoption cost is annotation, not modelling
-(\ref{app:emr}).
-
-%====================================================================
-\section{Conclusion}
-%====================================================================
-
-The July 2026 intrusion is widely described as a campaign defeated by
-insufficient detection. The public record does not support that
-description. At the victim, signals fired and were correlated into a
-coherent attack signal that was never raised to a criticality
-triggering on-call; at the perpetrator, a true-positive monitoring
-alert preceded the response that acted on it by
-5~hours~34~minutes, with 8
-further compromise events recorded in between. The binding constraint
-at both organisations was the step from a correct verdict to a human
-interrupt. Process safety benchmarks that error against a published
-target distribution; security has no equivalent target and no
-population study of deviation from one. We propose the metric and the
-annotation that would permit both, and release the corpus, pipeline and
-verification harness so they can be applied to the next such record.
-
-\section{Limitations and Dual-Use Considerations}
-\label{sec:limits}
-
-\paragraph{The two findings are not equally well evidenced.} The
-escalation result is the firm one: both halves are primary --- a direct
-quotation from the victim \cite{hf_timeline}, and two timestamps in
-OpenAI's own appendix \cite{openai_techreport} located by anchor string
-in a hashed copy. A reader who rejects all secondary sourcing keeps
-\S\ref{sec:escalation} intact. The concurrency result is the weaker
-one, for the two reasons given where it is reported (L3, and the bound
-of \S\ref{sec:conc-method}); a reader who discounts
-\S\ref{sec:concurrency} entirely is left with the escalation finding
-and the representational argument it motivates, which is unaffected.
-Two things would improve it, neither in the public record: a primary
-source for the attribution date, and the phase-by-day counts.
-
-\paragraph{Further limitations.}
-\begin{description}[leftmargin=*,itemsep=2pt,style=unboxed]
-\item[(L1) Single incident.] All results describe one campaign. No
-inferential statistic is reported and none would be appropriate; the
-concurrency result is a measurement, not a hypothesis test, and nothing
-here establishes a base rate.
-
-\item[(L2) Derived data.] The raw action log and agent transcripts are
-unreleased. Aggregation choices in the published summary are the
-publisher's and cannot be audited from outside.
-
-\item[(L3) Envelopes are not duty cycles.] Concurrency is estimated
-from interval endpoints, which is why inference is restricted to dense
-phases (\S\ref{sec:conc-method}, \ref{app:conc}); the unrestricted
-figure is reported alongside the restricted one. Simultaneous
-\emph{activity} is not established by this paper.
-
-\item[(L4) Secondary-sourced dates.] Two events --- OpenAI's internal
-identification and the 5 August conference disclosure --- rest on press
-reporting with anonymous sourcing. 5 of
-7 events are anchored in cached primary sources, and
-every dependent interval is marked (Table~\ref{tab:lags}).
-
-\item[(L5) Paywalled standards.] The
-80/15/5 target is corroborated
-across independent industry sources rather than retrieved from EEMUA
-191 or ISA-18.2 directly.
-
-\item[(L6) Verification establishes consistency, not correctness.] The
-build guarantees that reported values match the artifacts they derive
-from. It cannot detect an inappropriate measure or a mis-specified
-source, and no claim of correctness rests on it.
-
-\item[(L7) EMR is unmeasured here.] Hugging Face's escalation policy
-and alarm configuration are unpublished, so no value of EMR is claimed
-for this incident (\ref{app:emr}); the metric is offered as an
-instrument, not a measurement.
-\end{description}
-
-\paragraph{Dual use.} This paper reports aggregate campaign structure
-and timing derived from already-public material. It contains no
-exploit, payload or capability uplift; the captured commands it draws
-on were published by the victim with credentials and hostnames
-redacted; no novel installation recipe, intrusion technique or evasion
-method is described; and nothing withheld by the primary sources is
-reconstructed. The findings are defensive, arguing for changes to alert
-prioritisation and to the evaluation of screening systems. The
-foreseeable misuse is an adversary inferring that interleaved phases
-degrade stage-keyed playbooks. We assess this as low marginal risk: the
-interleaving is present in the victim's own published artifact, and an
-adversary able to conduct such a campaign does not depend on this
-analysis to observe it. The released repository contains parsers and
-derived aggregates only, and redistributes none of the cached source
-bytes.
-
-\paragraph{LLM-assisted authoring.} The lead author used Claude Opus 5
-for source retrieval, prose drafting and code review. The research
-question, the density-restricted concurrency measure, the escalation
-reconstruction, the comparison between the two literatures, the
-ingestion and verification design, and all judgements about what the
-evidence supports are the author's own. All quotations were retrieved
-from primary sources and are located by page or anchor.
-
-%====================================================================
-\section*{Availability}
-%====================================================================
-
-Corpus retrieved 2026-09-04; OpenAI's technical report added
-2026-09-05. Repository: [REPOSITORY URL NOT SET - see paper/REPO\_URL.txt] --- code MIT, derived data CC BY
-4.0. The
-7 cached third-party artifacts are \emph{not}
-redistributed; \texttt{cache/manifest.json} ships their URLs, byte
-counts, fetch times and SHA-256 digests instead, and a re-fetch that
-yields a different digest is reported rather than silently accepted.
-Environment and reproduction commands: \ref{app:repro}.
-
-{\footnotesize
-\bibliographystyle{plainurl}
-\bibliography{references}
-}
-
-\clearpage
-%====================================================================
-\appendix
-%====================================================================
-% Headings and cross-references both read "Appendix A" rather than a bare letter, so \ref
-% carries the word and call sites must not prepend it themselves.
-\renewcommand{\thesection}{Appendix~\Alph{section}}
-
-\section{The concurrency measure and its bound}
-\label{app:conc}
-
-\begin{table}[h]
-\centering
-\small
-\begin{tabular}{lrrrrl}
-\toprule
-Phase & Actions & Onset & Envelope span & Actions per 1\% & Class \\
-\midrule
-recon & 6,191 & 0.014 & 0.986 & 62.8 & \textbf{dense} \\
-rce & 2,911 & 0.014 & 0.981 & 29.7 & \textbf{dense} \\
-dropper & 6,972 & 0.032 & 0.968 & 72.0 & \textbf{dense} \\
-exfil & 56 & 0.109 & 0.878 & 0.6 & sparse \\
-c2 & 114 & 0.122 & 0.851 & 1.3 & sparse \\
-evasion & 6 & 0.158 & 0.697 & 0.1 & sparse \\
-k8s & 87 & 0.517 & 0.254 & 3.4 & sparse \\
-supply--chain & 69 & 0.570 & 0.424 & 1.6 & sparse \\
-tailscale & 115 & 0.621 & 0.373 & 3.1 & sparse \\
-\bottomrule
-\end{tabular}
-\caption{Phase onsets, envelopes and densities, ordered by onset.
-Onset $f_p$ and span $\sigma_p$ are fractions of the campaign; density
-is $\delta_p$ per 1\% of campaign time. The three dense phases begin
-together and run throughout; the six sparse phases begin progressively
-later. Extent statistics computed from the span column are bounded in
-advance --- \S\ref{sec:conc-method}.}
-\label{tab:phases}
-\end{table}
 
 \paragraph{Definitions.} With campaign time normalised to $[0,1]$ and
 $c_D(t)=\left|\{p \in D: t \in E_p\}\right|$ the number of dense phases
@@ -711,28 +735,6 @@ overlap statistic.
 
 \section{Source provenance, validation and parser failure modes}
 \label{app:prov}
-
-\begin{table}[h]
-\centering
-\small
-\begin{tabular}{lrl}
-\toprule
-Interval & Days & Weakest source \\
-\midrule
-First recorded agent action $\rightarrow$ Last recorded agent action & 4.49 & primary \\
-Last recorded agent action $\rightarrow$ Hugging Face discloses publicly & 2.41 & primary \\
-First recorded agent action $\rightarrow$ OpenAI connects its evaluation to the intrusion & 10.90 & secondary \\
-Hugging Face discloses publicly $\rightarrow$ OpenAI connects its evaluation to the intrusion & 4.00 & secondary \\
-First recorded agent action $\rightarrow$ OpenAI acknowledges publicly & 11.90 & primary \\
-Last recorded agent action $\rightarrow$ METR/Redwood independent investigation published & 43.41 & primary \\
-\bottomrule
-\end{tabular}
-\caption{Escalation intervals across the disclosure path, for context
-rather than argument (\S\ref{sec:escalation}). Intervals depending on a
-press-sourced date are marked \emph{secondary}; no claim in this paper
-rests on one.}
-\label{tab:lags}
-\end{table}
 
 \paragraph{Provenance.} The ASM Consortium benchmarking paper
 \cite{reising2005asm} is distributed by Honeywell at
@@ -818,6 +820,19 @@ ASM benchmarking design \cite{reising2005asm} shows what
 consequence-and-response-window labels then permit: a population study
 of measured deviation from a published target, which is the form of
 evidence security alert screening currently cannot produce.
+
+\paragraph{Making the annotation organisation-independent.} Since
+$u^{*}$ is a property of the deploying organisation, a bare tier $u$
+would not transfer between deployments. The fix is to record what the
+tier is derived from rather than the tier itself: annotate each
+malicious alert with the pair (consequence class, response window) that
+ISA-18.2 rationalisation already uses as its inputs \cite{isa182}, both
+of which are properties of the event. Each deploying organisation then
+supplies its own map from that pair to a tier, and its own $u^{*}$. The
+corpus stays portable, the threshold stays local, and EMR is computed
+per deployment and compared across deployments only through the
+published target distribution. The adoption cost is annotation, not
+modelling.
 
 \paragraph{Do not condition agentic response on the attacker's stage
 being \emph{exclusive}.} Onsets are ordered and recoverable, so ``has

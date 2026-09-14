@@ -1,11 +1,64 @@
-# Both Sides Detected It, Neither Escalated
+---
+license: cc-by-4.0
+pretty_name: "July 2026 Autonomous Agent Intrusion — Forensic Corpus"
+language:
+  - en
+tags:
+  - ai-safety
+  - ai-incident-response
+  - autonomous-agents
+  - digital-forensics
+  - alert-triage
+  - alarm-management
+size_categories:
+  - n<1K
+configs:
+  - config_name: phases
+    data_files: data/replay_phases.csv
+  - config_name: days
+    data_files: data/replay_days.csv
+  - config_name: cumulative
+    data_files: data/replay_cumulative.csv
+  - config_name: attack_graph
+    data_files: data/replay_events.csv
+  - config_name: timeline
+    data_files: data/timeline.csv
+  - config_name: timeline_lags
+    data_files: data/timeline_lags.csv
+  - config_name: openai_appendix_timeline
+    data_files: data/openai_tr_timeline.csv
+  - config_name: metr_passages
+    data_files: data/metr_passages.csv
+  - config_name: metr_agent_quotes
+    data_files: data/metr_agent_quotes.csv
+  - config_name: hfblog_sections
+    data_files: data/hfblog_sections.csv
+  - config_name: hfblog_commands
+    data_files: data/hfblog_commands.csv
+---
 
-**A forensic reconstruction of the July 2026 autonomous agent intrusion, built from seven public
-primary sources, finding that detection was not the binding constraint at either organisation —
-escalation was.**
+# Both Sides Detected It, Neither Escalated: Concurrency and Escalation Failure in the July 2026 Autonomous Agent Intrusion
 
-Paper: [`paper/main.pdf`](paper/main.pdf) · 8-page main text plus appendices ·
-Apart Research & CeSIA AI Incident Response Sprint, Track 2
+This repository contains the corpus, ingestion pipeline and report for a forensic reconstruction
+of the **July 2026 autonomous agent intrusion**, submitted to the **[Apart Research & CeSIA AI
+Incident Response Sprint](https://www.apartresearch.com/)**, Track 2 (Forensics and Forecasting).
+
+#### By: [Fatimah Mohamed Emad Elden](https://scholar.google.com/citations?user=CfX6eA8AAAAJ&hl=ar)
+
+#### *Trouve Labs*
+
+[![Paper](https://img.shields.io/badge/Paper-PDF-b31b1b.svg)](paper/main.pdf)
+[![Code](https://img.shields.io/badge/GitHub-Code-blue)](https://github.com/astral-fate/agent-intrusion-escalation-forensics)
+[![HuggingFace](https://img.shields.io/badge/HuggingFace-Dataset-F9D371)](https://huggingface.co/datasets/FatimahEmadEldin/agent-intrusion-escalation-forensics)
+[![License](https://img.shields.io/badge/License-MIT-lightgrey)](LICENSE)
+
+---
+
+**Detection was not the binding constraint at either organisation — escalation was.** Built from
+seven public primary sources with a pipeline in which every number in the report is recomputed
+from the data at build time.
+
+Report: [`paper/main.pdf`](paper/main.pdf) — 8-page main text plus Appendices A–D.
 
 ---
 

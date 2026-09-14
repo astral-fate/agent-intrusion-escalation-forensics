@@ -39,7 +39,7 @@
   "OAI_RESPONSE_PAGE": "38",
   "OAI_TR_PAGES": "38",
   "OAI_TR_ENTRIES": "69",
-  "REPO_URL": "[REPOSITORY URL NOT SET - see paper/REPO_URL.txt]",
+  "REPO_URL": "https://github.com/astral-fate/agent-intrusion-escalation-forensics",
   "PYTHON_VERSION": "3.14.4",
   "PYPDF_VERSION": "6.16.2",
   "N_SOURCES": "7",
