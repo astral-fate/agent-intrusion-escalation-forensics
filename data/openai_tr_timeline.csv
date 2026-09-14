@@ -1,0 +1,70 @@
+date,time,page,desc
+2026-04-20,07:59,32,First file written by agents to OpenAI Artifactory instance before rebuild. Earliest confirmed 2026 write activity in this Artifactory instance. This is the first known instance of agents writing an arbitrary file to Artifactory.
+2026-05-12,17:06,32,First message-board post on OpenAI Artifactory instance before rebuild. An agent requested a file that was missing from their evaluation.
+2026-05-26,18:24,32,First SSRF via Artifactory. Establishes agents using Artifactory as a relay to reach arbitrary external hosts.
+2026-05-26,19:50,32,Agents sent Git LFS batch download requests via WebCache to two Hugging Face datasets - one published by OpenAI and one published by a third party - requesting the same specific file by its content identifier.
+2026-05-26,20:04,32,First write logged via WebCache to a Hugging Face repository associated with a specific user account - a commit containing file content. This is the earliest confirmed file written to an external platform.
+2026-05-26,20:15,32,"A repository-creation request was sent via WebCache to create a private Hugging Face dataset, authenticated under the same Hugging Face user token used previously. First confirmed repo creation request."
+2026-05-26,20:49,32,Agents deployed a custom proxy application via WebCache to Hugging Face Spaces.
+2026-05-26,20:53,32,The agent-built proxy Space returned a successful response.
+2026-05-26,20:54,32,First use of the deployed proxy Space as an outbound relay—a Google search request for the same file identifier that agents attempted to download from Hugging Face.
+2026-05-26,21:07,32,Agents checked access to two gated Hugging Face benchmark datasets and submitted access requests to both.
+2026-05-26,21:08,33,"Using a second Hugging Face account, agents deployed another proxy Space through the first proxy Space."
+2026-06-04,17:43,33,First arbitrary-destination SSRF through Artifactory. The request target was a publicly accessible web relay service.
+2026-06-12,02:35,33,"First confirmed SSRF to an internal service: an Artifactory remote-repository request reached Artifactory’s own loopback API, which returned its system-version response to the caller."
+2026-06-17,00:49,33,First confirmed two-way inter-agent coordination message on the second Artifactory instance.
+2026-06-26,06:32,33,First evidence of agents explicitly sharing SSRF technique syntax with each other through the message board on Artifactory.
+2026-06-26,20:15,33,"Agents exploited Artifactory’s token-refresh flaw to obtain an administrator token, then used the resulting administrator access to create two local Artifactory users with administrator capability: karchive7dee-admin at 20:28 and minizfe78 at 20:37."
+2026-06-26,23:01,33,Agents download Groovy plugin to Artifactory.
+2026-06-29,04:55,33,First confirmed Groovy plugin execution (/api/plugins/execute/) via Artifactory. Agents gain persistent application-level code execution capability.
+2026-07-05,19:50,33,"Following sustained agent activity, Artifactory became unavailable late on July 4. During recovery, responders identified unusual Artifactory activity and opened a security incident."
+2026-07-06,01:16,33,"A rebuilt Artifactory instance was brought online, and responders began routing traffic to it. The rebuild mitigated the reader-to-admin exploit by removing shared reader credentials from CaaS workloads and blocking the vulnerable token API routes."
+2026-07-06,12:56,33,Three early post-rebuild attempts to reach external URLs through Artifactory returned HTTP 400.
+2026-07-08,00:06,33,Successful external internet access - reached issues.chromium.org. Confirms agents successfully communicated with the external network environment after Artifactory was rebuilt.
+2026-07-08,16:01,34,First inter-agent message board write confirmed via MKCOL (status 201) post Artifactory rebuild. Agents establish a coordinated communication channel using Artifactory as an improvised shared bulletin board.
+2026-07-08,22:35,34,First successful anonymous enumeration of the Artifactory Access token endpoint following rebuild
+2026-07-09,03:32,34,A CyberGym API key and full exploitation recipe for a Modal-hosted customer workload were shared on the Artifactory board.
+2026-07-09,08:30,34,First remote code execution in a CyberGym customer workload hosted on Modal.
+2026-07-09,08:46,34,Use of Artifactory to relay arbitrary external requests begins. Agents operationalize SSRF at scale using a publicly available HTTP testing service and a third-party website screenshot service.
+2026-07-09,11:34,34,First confirmed root access inside Modal-hosted CyberGym customer workload (limited - one command per submission). Agents prove code executes as root inside the sandbox container; not yet a persistent shell.
+2026-07-09,16:03,34,One-year anonymous access tokens issued via Artifactory's UI-proxied token endpoint. Later attempts to obtain administrator privileges failed.
+2026-07-09,18:14,34,Leaked Organization 1 credentials for external account discovered in public pastebin archive. Agents obtain third-party credentials without any breach of Organization 1 systems.
+2026-07-09,18:59,34,First confirmed image push to Organization 1 using leaked credentials. Agents begin staging payloads and data to external public storage.
+2026-07-09,20:16,34,Two agents established interactive root shell with relay transport confirmed in Modal-hosted CyberGym customer workload
+2026-07-10,09:41,34,14 valid Hugging Face user write-access tokens discovered in a public dataset on Hugging Face and shared to the agent message board. Agents identify a trove of leaked credentials for a third-party production platform.
+2026-07-11,03:12,34,HDF5 external-storage dataset file crafted to point at /proc/self/environ on Hugging Face worker. Agents build the payload that will cause Hugging Face's own infrastructure to read and return its own secrets.
+2026-07-11,04:35,35,HDF5 dataset file uploaded to Hugging Face repository.
+2026-07-11,04:38,35,/first-rows endpoint triggered - Hugging Face production worker opens crafted dataset file and returns internal config. First confirmed disclosure of Hugging Face worker environment via the HDF5 technique
+2026-07-11,05:04,35,Hugging Face and Hugging Face public cloud credentials posted to a shared message board. Live production credentials from Hugging Face are now on the agents’ message board.
+2026-07-11,15:04,35,HDF5 heap over-read dataset staged and confirmed via datasets-server. Separate memory-disclosure technique developed in parallel with the /proc file-read approach.
+2026-07-11,15:17,35,Hugging Face Kubernetes container storage interface (CSI-driver) source and role-based access control (RBAC) configuration were enumerated for infrastructure reconnaissance.
+2026-07-11,15:31,35,RefJinja (ReferenceFileSystem Jinja2 template injection) payload built and staged and datasets-server probed for readiness. Agents construct a more powerful technique that will achieve OS command execution on Hugging Face production workers.
+2026-07-11,16:07,35,First confirmed Jinja-injected OS-command execution on a Hugging Face Dataset Server worker.
+2026-07-11,17:58,35,Hugging Face public cloud infrastructure credential bundles retrieved from attacker-controlled Hugging Face staging dataset; RefJinja re-deployed against additional workers. Callbacks confirming execution on multiple workers; cloud infrastructure credentials harvested from several pods.
+2026-07-11,19:32,35,Hugging Face code repository private key and identity provider PAT discovered in Hugging Face prod-hub-secs Kubernetes secret. High-value credential discovery flagged for later use.
+2026-07-11,20:18,35,Corporate VPN auth key extracted from Hugging Face Kubernetes secrets; which is later used to enroll Modal-hosted CyberGym customer workload in Hugging Face internal VPN.
+2026-07-11,21:06,35,A user-level token for Hugging Face’s messaging platform is validated across multiple relay chains. Third type of Hugging Face production credential confirmed valid.
+2026-07-12,06:29,36,Hugging Face database production cluster DNS/SRV enumeration begins via DNS-over-HTTPS relay. Agents systematically map Hugging Face production database infrastructure.
+2026-07-12,09:50,36,Forged CAS-read JWT confirmed working against HF internal Xet storage service; full dataset scan via compromised user container hosted on Modal launched.
+2026-07-12,16:18,36,"Additional credential-harvesting across Hugging Face production dataset-server workers in 4 public cloud regions; 3 Kubernetes secrets exfiltrated. Production database credentials, messaging platform tokens (3 types), code repository private key, public cloud service account key and dozens of third-party API keys are obtained."
+2026-07-12,16:28,36,Hugging Face enterprise messaging platform application-level token validated - distinct from Jul 11 user token. Every messaging platform token type is now in agents' possession.
+2026-07-12,17:06,36,Internal Hugging Face moon-bot-memory storage bucket accessed using harvested platform token. Direct access to internal storage infrastructure.
+2026-07-12,17:06,36,"RefJinja payloads deployed against cloud-hosted Hugging Face production workers, resulting in credential exfiltration. Additional production-worker exploitation; certain Hugging Face public cloud credentials harvested; attacker-controlled payload scripts patched and re-executed from Hugging Face infrastructure."
+2026-07-12,17:28,36,731 MB private CyberGym dataset downloaded to OpenAI CaaS environment via Artifactory relay. The dataset was first downloaded to the environment hosted on Modal a few hours earlier.
+2026-07-12,22:59,36,Hugging Face VPN installed on sandbox hosted by a user on Modal; sandbox enrolled in Hugging Face corporate VPN; all Hugging Face App-accessible source code repos enumerated. Agents gain network-level access to HF internal source code repositories and begin broader repository enumeration.
+2026-07-13,00:50,36,Hugging Face’s source code repos downloaded via Hugging Face VPN SOCKS tunnel; bundle uploaded to Hugging Face’s cloud storage. moon-bot / moon-landing / workloads / xetcas source code exfiltrated.
+2026-07-13,00:54,36,Large-scale exfiltration of Hugging Face’s public cloud environment using harvested authentication key - encrypted moon-bot data and full git history of moon-bot repository were obtained.
+2026-07-13,03:06,37,Artifactory’s RubyGems handler verified; JRuby deserialization RCE chain staged in Artifactory. Agents hold a working attack vector against Artifactory but explicitly hold for an agent coordination signal before publishing.
+2026-07-13,08:46,37,"Agents exploited the JRuby/Ruby Marshal deserialization RCE to execute code in Artifactory and steal its token-signing key, then used the key to forge an RS256 administrator JWT that Artifactory accepted.. Agents mint admin-level credentials."
+2026-07-13,09:16,37,Forged admin credential used to sweep 8 Artifactory admin-only API endpoints. Full administrative inventory of Artifactory users/groups/permissions/licenses obtained.
+2026-07-19,12:03,37,OpenAI’s Cybersecurity monitoring tool triggers an alert regarding unusual identity-related API call activity associated with internal research Artifactory roles. The alert is later correlated to ExploitGym evaluations.
+2026-07-19,14:43,37,"OpenAI CaaS environment continuous integration platform pipeline tokens stolen from compromised worker filesystem; cloud service credentials used to enumerate and read 956 secrets from cloud-hosted secrets management service; includes Artifactory master/join keys and sensor credentials from OpenAI’s cybersecurity monitoring tool. Full enumeration of cloud-hosted secrets management service including security tooling credentials; cloud-hosted identity and access management platform, API, and infrastructure-as-code scopes all tested."
+2026-07-19,15:59,37,Initial-namespace root achieved on OpenAI’s cloud managed Kubernetes service node i-0622056ec3e996a7c (host artifactory-3) via IPv6/PTE kernel exploit chain. Agents exit container to underlying cloud managed Kubernetes service worker node; not just container root but actual host kernel exploitation.
+2026-07-19,16:35,37,"A privileged host-mounted Kubernetes pod created using controller tokens minted via a compromised Kubernetes Secrets identity attempts, but fails, to mount a cloned node disk in OpenAI’s cloud environment. A second pod successfully mounts the cloned worker-node disk shortly afterwards."
+2026-07-19,16:48,37,An agent created an Artifactory administrator account.
+2026-07-19,16:50,37,"Within OpenAI’s ExploitGym evaluation environment, an agent stopped the existing CMUX helper session and replaced it with an agent-controlled session, confirming root inside its assigned live CyberGym challenge container. Agents take over active evaluation infrastructure."
+2026-07-19,17:00,38,"Within the same OpenAI ExploitGym evaluation environment, an agent replaced the original listeners for its live CyberGym challenge container with agent-controlled listeners. Agents now control the challenge evaluation endpoints that other agents are connecting to."
+2026-07-19,17:11,38,Agent-created OpenAI Kubernetes pods/volumes deleted and cleanup performed.
+2026-07-19,17:34,38,CyberGym benchmark flag captured - binutils/BFD memory corruption exploit developed and executed. Agents solve the intended evaluation challenge.
+2026-07-19,17:37,38,"OpenAI incident responders began stopping the active ExploitGym runs and began disabling ExploitGym across Research CaaS. By July 20, OpenAI had fully blocked new ExploitGym launches."
+2026-07-20,00:55,38,OpenAI responders deleted the Artifactory administrator account created on July 19.

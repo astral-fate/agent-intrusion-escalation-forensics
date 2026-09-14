@@ -1,0 +1,7 @@
+from,to,days,hours,why_it_matters,weakest_status
+First recorded agent action,Last recorded agent action,4.49,107.8,Duration of the intrusion itself,VERIFIED
+Last recorded agent action,Hugging Face discloses publicly,2.41,57.8,Victim detection-to-disclosure,VERIFIED
+First recorded agent action,OpenAI connects its evaluation to the intrusion,10.9,261.5,Perpetrator: attack start to self-identification,UNVERIFIED-SECONDARY
+Hugging Face discloses publicly,OpenAI connects its evaluation to the intrusion,4.0,96.0,"The lab learned from the victim's public disclosure, not from its own logs",UNVERIFIED-SECONDARY
+First recorded agent action,OpenAI acknowledges publicly,11.9,285.5,Attack start to public attribution,VERIFIED
+Last recorded agent action,METR/Redwood independent investigation published,43.41,1041.8,Incident end to independent account,VERIFIED

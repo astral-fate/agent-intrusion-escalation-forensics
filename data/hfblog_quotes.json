@@ -1,0 +1,34 @@
+{
+  "front_matter": {
+    "title": "Anatomy of a Frontier Lab Agent Intrusion: A Technical Timeline of the July 2026 Incident",
+    "thumbnail": "/blog/assets/agent-intrusion-technical-timeline/thumbnail.png",
+    "authors": [
+      "hlarcher",
+      "XciD",
+      "raphael-gl",
+      "chris-rannou"
+    ]
+  },
+  "quotes": {
+    "detection_criticality": {
+      "anchor": "criticality",
+      "source": "hf_blog_timeline",
+      "text": "However, it failed to correctly raise the alert's criticality and trigger the on-call team, costing precious time in the response. Once caught, the Hugging Face security team identified the vector in the dataset config renderer, shut down the renderer, and cut the attacker off from the internal network. Pulling on the first threads showed the scale of what we were dealing with: the volume and cadence of the actions were far beyond what an operator could sustain by hand, and the campaign kept rebuilding its tooling and channels across short-lived environments."
+    },
+    "defenders_dilemma_timeline": {
+      "anchor": "refused a large part",
+      "source": "hf_blog_timeline",
+      "text": "The models we reached for first, Claude Opus and Fable, refused a large part of that work: their safety guardrails treated reverse-engineering an exploit the same as launching one. ![API error: safety measures flagged this message for a cybersecurity topic](/blog/assets/agent-intrusion-technical-timeline/guardrails.png) *Guardrails on Opus tripped every time we tried to analyze the attack logs.* We stood up the quantized version of ZAI's GLM-5.2 by Nvidia ([nvidia/GLM-5.2-NVFP4](https://huggingface.co/nvidia/GLM-5.2-NVFP4)) on our [own infrastructure](https://endpoints.huggingface.co/) and rerouted the entire pipeline through it, with the added benefit of keeping the attacker data on-prem. The first target was the dead-drop payloads: with GLM-5.2, we recovered the chunk+XOR+compress scheme and the per-campaign key the agent had itself leaked across its logs: exactly what let us decrypt the staged blobs a naive scan of the raw capture had missed."
+    },
+    "asymmetry": {
+      "anchor": "asymmetry",
+      "source": "hf_blog_timeline",
+      "text": "## Reflection: the asymmetry problem The agent's offensive capability was real. This evaluation deliberately disabled OpenAI's production safety classifiers and reduced cyber refusals to measure the underlying model's raw capability. No human directed the individual steps."
+    },
+    "defenders_dilemma": {
+      "anchor": "behind commercial APIs",
+      "source": "hf_disclosure",
+      "text": "The asymmetry problem When we started the log analysis, we first used frontier models behind commercial APIs. This did not work: the analysis requires submitting large volumes of real attack commands, exploit payloads, and C2 artifacts, and these requests were blocked by the providers' safety guardrails, which cannot distinguish an incident responder from an attacker. We ran the forensic analysis instead on zai-org/GLM-5.2 , an open-weight model, on our own infrastructure."
+    }
+  }
+}

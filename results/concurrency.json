@@ -1,0 +1,123 @@
+{
+  "phases": [
+    {
+      "key": "recon",
+      "c": "var(--blue)",
+      "total": 6191,
+      "first": 0.0142,
+      "last": 0.9997,
+      "desc": "host / fs / proc / net enumeration",
+      "span": 0.9855,
+      "density": 62.82090309487569,
+      "dense": true
+    },
+    {
+      "key": "rce",
+      "c": "var(--red)",
+      "total": 2911,
+      "first": 0.0144,
+      "last": 0.9958,
+      "desc": "direct shell commands - the engine",
+      "span": 0.9814,
+      "density": 29.66170776441818,
+      "dense": true
+    },
+    {
+      "key": "dropper",
+      "c": "var(--orange)",
+      "total": 6972,
+      "first": 0.032,
+      "last": 1.0,
+      "desc": "staging URLs, base64 / gzip blobs",
+      "span": 0.968,
+      "density": 72.02479338842976,
+      "dense": true
+    },
+    {
+      "key": "exfil",
+      "c": "var(--pink)",
+      "total": 56,
+      "first": 0.1087,
+      "last": 0.9868,
+      "desc": "outbound data theft (env, secrets)",
+      "span": 0.8781,
+      "density": 0.6377405762441635,
+      "dense": false
+    },
+    {
+      "key": "c2",
+      "c": "var(--purple)",
+      "total": 114,
+      "first": 0.1219,
+      "last": 0.9731,
+      "desc": "staged-payload execution",
+      "span": 0.8512,
+      "density": 1.3392857142857144,
+      "dense": false
+    },
+    {
+      "key": "evasion",
+      "c": "var(--gray)",
+      "total": 6,
+      "first": 0.1584,
+      "last": 0.855,
+      "desc": "gzip / base64 packing, AV probing",
+      "span": 0.6966,
+      "density": 0.08613264427217916,
+      "dense": false
+    },
+    {
+      "key": "k8s",
+      "c": "var(--salmon)",
+      "total": 87,
+      "first": 0.5169,
+      "last": 0.7708,
+      "desc": "service-account / EKS enumeration",
+      "span": 0.2539,
+      "density": 3.4265458842063805,
+      "dense": false
+    },
+    {
+      "key": "supply-chain",
+      "c": "var(--yellow)",
+      "total": 69,
+      "first": 0.5696,
+      "last": 0.9935,
+      "desc": "token theft, GitHub App abuse",
+      "span": 0.42390000000000005,
+      "density": 1.627742392073602,
+      "dense": false
+    },
+    {
+      "key": "tailscale",
+      "c": "var(--cyan)",
+      "total": 115,
+      "first": 0.6209,
+      "last": 0.9943,
+      "desc": "internal-network pivot",
+      "span": 0.37339999999999995,
+      "density": 3.07980717728977,
+      "dense": false
+    }
+  ],
+  "mean_pairwise_overlap_dense": 0.9985,
+  "mean_pairwise_overlap_all": 0.9593,
+  "max_concurrent_phases": 9,
+  "frac_campaign_ge3_phases": 0.963,
+  "frac_campaign_all_dense_active": 0.963,
+  "dense_phase_keys": [
+    "recon",
+    "rce",
+    "dropper"
+  ],
+  "sparse_phase_keys": [
+    "exfil",
+    "c2",
+    "evasion",
+    "k8s",
+    "supply-chain",
+    "tailscale"
+  ],
+  "dense_min_actions": 1000,
+  "campaign_days": 4.49
+}

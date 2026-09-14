@@ -1,0 +1,54 @@
+cff-version: 1.2.0
+message: "If you use this dataset, pipeline or analysis, please cite it as below."
+title: >-
+  Both Sides Detected It, Neither Escalated: Concurrency and Escalation
+  Failure in the July 2026 Autonomous Agent Intrusion
+abstract: >-
+  A forensic reconstruction of the July 2026 autonomous agent intrusion from
+  seven public primary sources. Against the published record, detection was not
+  the binding constraint at either organisation: the victim's signals fired and
+  were correlated into a coherent attack signal that was never raised to a
+  criticality triggering on-call, and the perpetrator's own technical report
+  timestamps a true-positive monitoring alert 5 h 34 min before responders began
+  stopping the runs, with eight further compromise events inside that interval.
+  The release includes the ingestion pipeline, sixteen derived datasets with
+  content-hash provenance, and a verification harness in which every number in
+  the manuscript is recomputed from the data at build time.
+type: dataset
+authors:
+  - family-names: Emad Eldin
+    given-names: Fatimah
+    email: Fatimah@trouve.works
+date-released: 2026-09-11
+license: CC-BY-4.0
+license-url: "https://creativecommons.org/licenses/by/4.0/"
+keywords:
+  - AI incident response
+  - autonomous agents
+  - alert triage
+  - alarm management
+  - digital forensics
+  - escalation failure
+references:
+  - type: report
+    title: >-
+      Anatomy of a Frontier Lab Agent Intrusion: A Technical Timeline of the
+      July 2026 Incident
+    authors:
+      - name: Hugging Face
+    year: 2026
+    url: "https://huggingface.co/blog/agent-intrusion-technical-timeline"
+  - type: report
+    title: "OpenAI — Hugging Face Incident Technical Report"
+    authors:
+      - name: OpenAI
+    year: 2026
+  - type: report
+    title: >-
+      Brief Independent Investigation of Agents' Behavior, Reasoning and
+      Collaboration in the OpenAI / Hugging Face Hacking Incident
+    authors:
+      - name: METR
+      - name: Redwood Research
+    year: 2026
+    url: "https://metr.org/hugging-face-incident-report-aug-2026.pdf"

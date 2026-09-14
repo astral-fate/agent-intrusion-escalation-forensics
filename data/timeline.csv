@@ -1,0 +1,8 @@
+when,label,actor,source_key,anchor,note,status
+2026-07-09T02:28:00Z,First recorded agent action,OpenAI agent,hf_blog_timeline,07-09,Replay data's own window start; the agent reaches the internet from the eval sandbox,VERIFIED
+2026-07-13T14:14:00Z,Last recorded agent action,OpenAI agent,hf_blog_timeline,07-13,End of recorded activity,VERIFIED
+2026-07-16T00:00:00Z,Hugging Face discloses publicly,Hugging Face,hf_disclosure,incident,Disclosure under uncertainty -- attribution not yet known; FBI notified,VERIFIED
+2026-07-20T00:00:00Z,OpenAI connects its evaluation to the intrusion,OpenAI,,,"Reported via Reuters with anonymous sourcing -- SECONDARY, not in cache",UNVERIFIED-SECONDARY
+2026-07-21T00:00:00Z,OpenAI acknowledges publicly,OpenAI,openai_disclosure,incident,GPT-5.6 Sol plus an unreleased internal research model,VERIFIED
+2026-08-05T00:00:00Z,Agent message board revealed at Black Hat,OpenAI staff,,,"Not present in the 21 July disclosure -- SECONDARY, not in cache",UNVERIFIED-SECONDARY
+2026-08-26T00:00:00Z,METR/Redwood independent investigation published,METR and Redwood,metr_report,PHASEONE10841,Raw transcripts still unreleased; the report quotes them,VERIFIED

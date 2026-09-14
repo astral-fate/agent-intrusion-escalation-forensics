@@ -1,0 +1,25 @@
+line,level,title,body_chars
+11,1,Anatomy of a Frontier Lab Agent Intrusion: A Technical Timeline of the July 2026 Incident,1465
+25,2,TL;DR,4817
+46,2,Initial access,0
+48,3,Stage 1: from an OpenAI evaluation sandbox to a rooted launchpad,2493
+91,3,Stage 2: Penetrating Hugging Face infrastructure using two injection vectors into our dataset processor,1229
+97,4,Vector 1: HDF5 external raw storage file read,1048
+114,4,Vector 2: Jinja2 template injection,1085
+130,2,The kill chain,1559
+156,2,Day-by-day,485
+162,3,Day 1 (07-09): foothold and C2,551
+180,3,Day 2 (07-10): self-referential search,197
+184,3,Day 3 (07-11): lateral movement begins,3795
+234,3,Day 4 (07-12): using the stolen credentials,2739
+274,3,"Day 5 (07-13): exfil, persistence, cleanup",827
+298,2,Three lateral-movement techniques,0
+300,3,1. Node impersonation and CSI token theft (from the prod-pod foothold),787
+311,3,2. Forged identity tokens (from the prod-pod foothold),354
+315,3,3. Supply-chain write access,829
+321,2,Command-and-control and exfiltration,1099
+332,3,Building an improvised message protocol,1748
+344,2,Evasion and self-migration,892
+353,2,How we intercepted and analyzed the attack,2046
+367,2,What we changed,1397
+378,2,Reflection: the asymmetry problem,2366

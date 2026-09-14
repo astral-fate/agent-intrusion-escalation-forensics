@@ -1,0 +1,10 @@
+key,total,first,last,desc
+recon,6191,0.0142,0.9997,host / fs / proc / net enumeration
+rce,2911,0.0144,0.9958,direct shell commands - the engine
+dropper,6972,0.032,1.0,"staging URLs, base64 / gzip blobs"
+exfil,56,0.1087,0.9868,"outbound data theft (env, secrets)"
+c2,114,0.1219,0.9731,staged-payload execution
+evasion,6,0.1584,0.855,"gzip / base64 packing, AV probing"
+k8s,87,0.5169,0.7708,service-account / EKS enumeration
+supply-chain,69,0.5696,0.9935,"token theft, GitHub App abuse"
+tailscale,115,0.6209,0.9943,internal-network pivot

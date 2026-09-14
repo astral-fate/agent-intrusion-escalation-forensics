@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 760" width="980" height="760" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+  <title>Methodology: from primary sources to a manuscript that cannot contradict its artifacts</title>
+  <desc>A seven-stage pipeline. Public primary sources are fetched once and content-hashed into a byte cache; four parsers each assert a reconciliation condition and halt on failure; sixteen derived datasets feed two analyses; verify.py recomputes sixty-one claims and renders them into the manuscript template, so no number in the paper is transcribed by hand.</desc>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#57534e"/>
+    </marker>
+    <marker id="arrowGate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#b45309"/>
+    </marker>
+    <style>
+      .stage  { font-size: 11px; font-weight: 700; fill: #78716c; letter-spacing: .08em; }
+      .box    { fill: #ffffff; stroke: #d6d3d1; stroke-width: 1.2; rx: 6; }
+      .title  { font-size: 14px; font-weight: 700; fill: #1c1917; }
+      .mono   { font-size: 12px; font-weight: 700; fill: #1c1917; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+      .body   { font-size: 12px; fill: #44403c; }
+      .small  { font-size: 11px; fill: #57534e; }
+      .gate   { fill: #fffbeb; stroke: #fcd34d; stroke-width: 1.2; rx: 5; }
+      .gatetx { font-size: 11px; fill: #92400e; }
+      .gatehd { font-size: 10px; font-weight: 700; fill: #b45309; letter-spacing: .06em; }
+      .out    { fill: #eff6ff; stroke: #93c5fd; stroke-width: 1.2; rx: 6; }
+      .flow   { stroke: #57534e; stroke-width: 1.4; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="980" height="760" fill="#fbfbfa"/>
+
+  <!-- ============ 1. SOURCES ============ -->
+  <text class="stage" x="30" y="34">1 · PRIMARY RECORD</text>
+  <rect class="box" x="30" y="46" width="290" height="76"/>
+  <text class="title" x="44" y="68">Hugging Face — victim</text>
+  <text class="body" x="44" y="88">interactive replay (dataset inline in</text>
+  <text class="body" x="44" y="105">index.html), technical timeline, disclosure</text>
+
+  <rect class="box" x="344" y="46" width="290" height="76"/>
+  <text class="title" x="358" y="68">OpenAI — perpetrator</text>
+  <text class="body" x="358" y="88">two public statements, plus the 38-page</text>
+  <text class="body" x="358" y="105">technical report with the UTC appendix</text>
+
+  <rect class="box" x="658" y="46" width="292" height="76"/>
+  <text class="title" x="672" y="68">METR / Redwood — independent</text>
+  <text class="body" x="672" y="88">91-page investigation; raw transcripts</text>
+  <text class="body" x="672" y="105">and the ~17,600-action log not released</text>
+
+  <path class="flow" d="M 490 122 L 490 154"/>
+
+  <!-- ============ 2. CACHE ============ -->
+  <text class="stage" x="30" y="180">2 · RETRIEVE ONCE, HASH, NEVER RE-FETCH</text>
+  <rect class="box" x="30" y="192" width="620" height="74"/>
+  <text class="mono" x="44" y="214">ingest/sources.py</text>
+  <text class="body" x="44" y="234">Fetch with a browser User-Agent; store bytes verbatim; record URL, SHA-256,</text>
+  <text class="body" x="44" y="251">byte length, HTTP status, retrieval time and evidential class in the manifest.</text>
+
+  <rect class="gate" x="672" y="192" width="278" height="74"/>
+  <text class="gatehd" x="686" y="212">AVAILABILITY, CORRECTED</text>
+  <text class="gatetx" x="686" y="231">HTTP 403 here is a User-Agent filter,</text>
+  <text class="gatetx" x="686" y="247">not access control. With a UA header</text>
+  <text class="gatetx" x="686" y="263">every source returns 200.</text>
+
+  <path class="flow" d="M 340 266 L 340 300"/>
+
+  <!-- ============ 3. PARSERS ============ -->
+  <text class="stage" x="30" y="326">3 · PARSE — EACH STAGE ASSERTS A RECONCILIATION AND HALTS ON FAILURE</text>
+
+  <rect class="box" x="30" y="338" width="222" height="104"/>
+  <text class="mono" x="44" y="359">replay.py</text>
+  <text class="body" x="44" y="378">Scanner with explicit string-</text>
+  <text class="body" x="44" y="394">state tracking recovers the</text>
+  <text class="body" x="44" y="410">embedded JS literals.</text>
+  <rect class="gate" x="44" y="418" width="194" height="18"/>
+  <text class="gatetx" x="52" y="431">days = cumulative = 17,613</text>
+
+  <rect class="box" x="266" y="338" width="222" height="104"/>
+  <text class="mono" x="280" y="359">metr.py</text>
+  <text class="body" x="280" y="378">Page-by-page PDF reflow;</text>
+  <text class="body" x="280" y="394">agent reasoning separated</text>
+  <text class="body" x="280" y="410">from quotation, page-located.</text>
+  <rect class="gate" x="280" y="418" width="194" height="18"/>
+  <text class="gatetx" x="288" y="431">91 pages, text from ≥ 80 %</text>
+
+  <rect class="box" x="502" y="338" width="222" height="104"/>
+  <text class="mono" x="516" y="359">hfblog.py</text>
+  <text class="body" x="516" y="378">Markdown → section tree and</text>
+  <text class="body" x="516" y="394">captured command blocks;</text>
+  <text class="body" x="516" y="410">quotes located by anchor.</text>
+  <rect class="gate" x="516" y="418" width="194" height="18"/>
+  <text class="gatetx" x="524" y="431">every declared anchor found</text>
+
+  <rect class="box" x="738" y="338" width="212" height="104"/>
+  <text class="mono" x="752" y="359">openai_tr.py</text>
+  <text class="body" x="752" y="378">69 timestamped appendix</text>
+  <text class="body" x="752" y="394">entries; the two escalation</text>
+  <text class="body" x="752" y="410">endpoints found by substring.</text>
+  <rect class="gate" x="752" y="418" width="184" height="18"/>
+  <text class="gatetx" x="760" y="431">anchor matches exactly 1 row</text>
+
+  <path class="flow" d="M 141 442 L 141 466 L 490 466 L 490 486"/>
+  <path d="M 377 442 L 377 466" stroke="#57534e" stroke-width="1.4" fill="none"/>
+  <path d="M 613 442 L 613 466" stroke="#57534e" stroke-width="1.4" fill="none"/>
+  <path d="M 844 442 L 844 466 L 490 466" stroke="#57534e" stroke-width="1.4" fill="none"/>
+
+  <!-- ============ 4. DATA ============ -->
+  <text class="stage" x="30" y="504">4 · DERIVED DATA</text>
+  <rect class="out" x="30" y="512" width="440" height="56"/>
+  <text class="mono" x="44" y="533">data/ — 16 typed datasets</text>
+  <text class="body" x="44" y="553">phase envelopes, per-day counts, cumulative curve, quotes, events</text>
+
+  <!-- ============ 5. ANALYSIS ============ -->
+  <text class="stage" x="502" y="504">5 · ANALYSIS</text>
+  <rect class="box" x="502" y="512" width="218" height="56"/>
+  <text class="mono" x="516" y="533">concurrency.py</text>
+  <text class="body" x="516" y="553">density, onsets, analytic bound</text>
+
+  <rect class="box" x="734" y="512" width="216" height="56"/>
+  <text class="mono" x="748" y="533">escalation.py</text>
+  <text class="body" x="748" y="553">alert→response, lags, sourcing</text>
+
+  <path d="M 470 540 L 502 540" stroke="#57534e" stroke-width="1.4" fill="none" marker-end="url(#arrow)"/>
+  <path class="flow" d="M 611 568 L 611 592 L 490 592 L 490 612"/>
+  <path d="M 842 568 L 842 592 L 611 592" stroke="#57534e" stroke-width="1.4" fill="none"/>
+
+  <!-- ============ 6. VERIFY ============ -->
+  <text class="stage" x="30" y="630">6 · THE PAPER CANNOT CONTRADICT ITS ARTIFACTS</text>
+  <rect class="box" x="30" y="638" width="620" height="92"/>
+  <text class="mono" x="44" y="660">verify.py</text>
+  <text class="body" x="44" y="680">Recomputes all 61 claims from data/ and substitutes each into main.tex.tmpl.</text>
+  <text class="body" x="44" y="697">The manuscript holds no numbers of its own, so it cannot disagree with the data.</text>
+  <text class="small" x="44" y="719">Unknown placeholder → build failure · unused claim → orphan warning · abstract ≤ 150 words enforced</text>
+
+  <rect class="out" x="672" y="638" width="278" height="92"/>
+  <text class="title" x="686" y="660">Outputs</text>
+  <text class="body" x="686" y="681">main.pdf — 8-page main text</text>
+  <text class="body" x="686" y="698">+ Appendices A–D</text>
+  <text class="body" x="686" y="719">68 offline tests · results/claims.json</text>
+
+  <path d="M 650 684 L 672 684" stroke="#57534e" stroke-width="1.4" fill="none" marker-end="url(#arrow)"/>
+</svg>
