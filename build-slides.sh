@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
-# Render slides.html to slides.pdf, one page per slide.
+# Render the deck at index.html to docs/slides.pdf, one page per slide.
 #
 #   ./build-slides.sh
+#
+# index.html IS the deck: it is what GitHub Pages serves at the project URL and what this
+# script exports. There is deliberately no second copy of the slides anywhere -- a landing
+# page that duplicated the deck's content would be the thing that goes stale.
 #
 # The deck is authored as HTML because it carries live layout -- CSS grid columns, gradient
 # tiles, an inline SVG of the pipeline -- that a slide tool would flatten. `.slide` sets
@@ -15,8 +19,8 @@
 set -u
 cd "$(dirname "$0")"
 
-SRC="$(pwd)/slides.html"
-OUT="$(pwd)/slides.pdf"
+SRC="$(pwd)/index.html"
+OUT="$(pwd)/docs/slides.pdf"
 
 CHROME=""
 for c in \
@@ -31,13 +35,14 @@ do
 done
 
 if [ -z "$CHROME" ]; then
-    echo "no Chrome or Edge found -- open slides.html and print to PDF instead" >&2
+    echo "no Chrome or Edge found -- open index.html and print to PDF instead" >&2
     exit 1
 fi
 
 # Convert the path to a file:// URL Chrome accepts on Windows.
 URL="file:///$(echo "$SRC" | sed 's|^/\([a-z]\)/|\1:/|' | sed 's| |%20|g')"
 
+mkdir -p docs
 rm -f "$OUT"
 "$CHROME" --headless --disable-gpu --no-pdf-header-footer --no-margins \
           --virtual-time-budget=15000 --print-to-pdf="$OUT" "$URL" >/dev/null 2>&1
@@ -54,7 +59,7 @@ fi
 pages=$(python -c "import sys,pypdf;print(len(pypdf.PdfReader(sys.argv[1]).pages))" "$OUT" 2>/dev/null || echo "?")
 slides=$(grep -c 'class="slide-num"' "$SRC")
 
-echo "built slides.pdf -- $pages pages from $slides slides, $(stat -c%s "$OUT") bytes"
+echo "built docs/slides.pdf -- $pages pages from $slides slides, $(stat -c%s "$OUT") bytes"
 
 # A mismatch means a slide overflowed onto a second page, which is invisible in the HTML and
 # obvious in the PDF only if you count. Worth failing on rather than shipping a deck whose

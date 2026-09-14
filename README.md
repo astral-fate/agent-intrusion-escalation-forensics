@@ -48,8 +48,8 @@ Incident Response Sprint](https://www.apartresearch.com/)**, Track 2 (Forensics 
 #### *Trouve Labs*
 
 [![Paper](https://img.shields.io/badge/Paper-PDF-b31b1b.svg)](docs/both-sides-detected-it-neither-escalated.pdf)
-[![Slides](https://img.shields.io/badge/Slides-PDF-8b5cf6)](docs/slides.pdf)
-[![Site](https://img.shields.io/badge/Site-GitHub%20Pages-2ea44f)](https://astral-fate.github.io/agent-intrusion-escalation-forensics/)
+[![Slides](https://img.shields.io/badge/Slides-Live%20deck-2ea44f)](https://astral-fate.github.io/agent-intrusion-escalation-forensics/)
+[![Slides PDF](https://img.shields.io/badge/Slides-PDF-8b5cf6)](docs/slides.pdf)
 [![Code](https://img.shields.io/badge/GitHub-Code-blue)](https://github.com/astral-fate/agent-intrusion-escalation-forensics)
 [![HuggingFace](https://img.shields.io/badge/HuggingFace-Dataset-F9D371)](https://huggingface.co/datasets/FatimahEmadEldin/agent-intrusion-escalation-forensics)
 [![License](https://img.shields.io/badge/License-MIT-lightgrey)](LICENSE)
@@ -239,9 +239,9 @@ analysis/      concurrency.py (density, onsets, bound), escalation.py (intervals
 data/          16 derived datasets — the artifacts every claim is computed from
 results/       claims.json and the analysis outputs
 paper/         main.tex.tmpl (source), main.tex (generated), main.pdf, references.bib
-docs/          methodology.svg, slides.html + slides.pdf (6-slide deck),
-               and the built report PDF served by the Pages site
-index.html     the project page at astral-fate.github.io/agent-intrusion-escalation-forensics
+index.html     the 6-slide deck -- this IS the published site
+build-slides.sh  renders index.html to docs/slides.pdf via headless Chrome
+docs/          methodology.svg, the deck as PDF, and the built report PDF
 tests/         75 offline tests, including regressions for both parser failure modes
 verify.py      recomputes all 61 claims and renders the manuscript
 ```
